@@ -107,7 +107,7 @@ tailwind.config = {
     mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 16.5%, black 30%, black 70%, transparent 100%);
   }
 
-  /* ---------- Phone mockup ---------- */
+  /* ---------- Phone mockup (static, no float) ---------- */
   .phone {
     position: relative; width: 100%; max-width: 300px;
     aspect-ratio: 45 / 92; border-radius: 46px;
@@ -136,6 +136,9 @@ tailwind.config = {
     border-bottom: 1px solid rgba(0,0,0,0.06);
     background: rgba(250,247,241,0.94);
     backdrop-filter: blur(8px);
+    flex-shrink: 0;
+    z-index: 2;
+    position: relative;
   }
   .chat-avatar {
     width: 26px; height: 26px; border-radius: 50%;
@@ -145,16 +148,39 @@ tailwind.config = {
   }
   .chat-name { font-size: 12px; font-weight: 600; color: #111; }
   .chat-name small { display: block; font-size: 9px; font-weight: 400; color: #999; }
-  .chat-body {
-    flex: 1; padding: 12px 12px;
-    display: flex; flex-direction: column; gap: 5px;
-    overflow: hidden; background: #FFFDFA;
+
+  /* ---------- Animated phone content scroll ---------- */
+  .phone-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+    background: #FFFDFA;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
   }
+  .phone-scroll-track {
+    display: flex;
+    flex-direction: column;
+    animation: phone-scroll-anim 28s linear infinite;
+    will-change: transform;
+  }
+  @keyframes phone-scroll-anim {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(0, -50%, 0); }
+  }
+  .phone-scroll-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 4px 12px 12px;
+  }
+
   .channel-row {
     display: flex; align-items: center; gap: 8px;
     padding: 6px 8px; border-radius: 8px;
     font-size: 11px; color: #5c5c70;
-    animation: bubble-in 0.5s ease both;
+    flex-shrink: 0;
   }
   .channel-row i { font-size: 10px; width: 12px; text-align: center; color: #9b9baf; }
   .channel-row.active { background: #EEEBE6; color: #1C1C1C; font-weight: 600; }
@@ -165,15 +191,14 @@ tailwind.config = {
     background: #EDE4D2; color: #8a6a3a;
   }
   .mini-topic {
-    margin-top: 8px; padding: 10px;
+    padding: 10px;
     border-radius: 12px; border: 1px solid #E2E1DE;
     background: #FFFDFA; font-size: 10.5px; line-height: 1.45;
+    flex-shrink: 0;
   }
   .mini-topic .meta { font-size: 9px; color: #9b9baf; margin-bottom: 3px; }
   .mini-topic .title { font-weight: 600; color: #1C1C1C; }
   .mini-topic .excerpt { color: #5c5c70; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-  @keyframes bubble-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
   /* ---------- Carousel ---------- */
   @keyframes carousel-a { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
@@ -308,7 +333,6 @@ tailwind.config = {
   }
   .menu-scroll { overflow-y: auto; overscroll-behavior: contain; }
 
-  /* Theme preview swatches for bento #2 */
   .theme-preview {
     height: 56px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08);
     position: relative; overflow: hidden;
@@ -319,14 +343,11 @@ tailwind.config = {
     background: rgba(255,255,255,0.55);
   }
 
-  /* Build box cursor */
   @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
 
   /* ============================================================
-     LOGIN MODULE — appended
+     LOGIN MODULE
      ============================================================ */
-
-  /* ── Login button ── */
   .login-btn {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 7px 12px; border-radius: 10px;
@@ -346,7 +367,6 @@ tailwind.config = {
     font-weight: 600;
   }
 
-  /* ── Login Modal ── */
   .login-modal-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(30, 25, 20, 0.45);
@@ -485,7 +505,6 @@ tailwind.config = {
     color: #2483E2; border: 1px solid rgba(36,131,226,0.3);
   }
 
-  /* Focus states */
   button:focus-visible, a:focus-visible,
   input:focus-visible { outline: 2px solid #2483E2; outline-offset: 2px; }
 </style>
@@ -495,7 +514,6 @@ tailwind.config = {
 
 <div class="noise-overlay" aria-hidden="true"></div>
 
-<!-- Hidden SVG filter defs (parity with Poke) -->
 <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute h-0 w-0" aria-hidden="true" focusable="false">
   <defs>
     <filter id="smoky-filter-texture" x="-30%" y="-120%" width="160%" height="340%" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
@@ -511,14 +529,12 @@ tailwind.config = {
 
 <div data-landing-v2 class="relative w-full overflow-x-clip" style="background-color:#FFFDFA">
 
-  <!-- ================= HERO BACKGROUND TEXTURE ================= -->
   <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 overflow-hidden hero-mask" style="opacity:0.2">
     <div class="absolute left-0 w-full hero-texture" style="top:0;height:100vh;background-size:cover;background-position:center;"></div>
     <div class="absolute left-0 w-full hero-texture" style="top:100vh;height:100vh;background-size:cover;background-position:center;transform:scaleY(-1);"></div>
     <div class="absolute left-0 w-full hero-texture" style="top:200vh;height:100vh;background-size:cover;background-position:center;"></div>
   </div>
 
-  <!-- ================= DESKTOP HEADER ================= -->
   <div class="relative z-50 hidden min-[712px]:block">
     <header class="relative z-50 mx-auto grid h-[76px] w-full max-w-[1200px] grid-cols-3 items-center px-10 min-[1280px]:px-0" style="color:#000">
       <div class="justify-self-start">
@@ -550,13 +566,12 @@ tailwind.config = {
           <span data-login-text>Login</span>
         </button>
         <div class="pl-7">
-          <a href="#top" class="btn-dark h-10 rounded-xl px-5 text-[15px]">Enter Forum</a>
+          <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-10 rounded-xl px-5 text-[15px]">Enter Forum</a>
         </div>
       </div>
     </header>
   </div>
 
-  <!-- ================= MOBILE HEADER ================= -->
   <div class="relative z-50 min-[712px]:hidden">
     <header class="z-50 flex h-[calc(env(safe-area-inset-top)+64px)] items-center justify-between px-6 pt-[env(safe-area-inset-top)]" style="color:#000">
       <a aria-label="FED Hub home" class="inline-flex items-center gap-2 text-inherit" href="#top">
@@ -579,7 +594,6 @@ tailwind.config = {
     </header>
   </div>
 
-  <!-- ================= MOBILE MENU ================= -->
   <div id="menu-dialog" class="fixed inset-0 z-[60] hidden">
     <div id="menu-backdrop" class="absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300"></div>
     <div id="menu-panel" class="absolute inset-x-0 bottom-0 top-[env(safe-area-inset-top)] overflow-hidden rounded-b-none shadow-2xl ring-1 ring-black/10 bg-[#FDFBF7]/95 backdrop-blur-xl translate-y-full transition-transform duration-300 ease-out">
@@ -609,18 +623,16 @@ tailwind.config = {
           </ul>
         </nav>
         <div class="mx-1 mt-auto flex flex-col items-center gap-3 px-6 py-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-          <a href="#top" class="btn-dark h-12 w-full max-w-[357px] gap-2.5 rounded-2xl px-10 text-base">Enter Forum</a>
+          <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-12 w-full max-w-[357px] gap-2.5 rounded-2xl px-10 text-base">Enter Forum</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ================= MAIN ================= -->
   <main id="top">
     <div class="flex flex-col gap-0">
       <div class="flex flex-col gap-20 min-[712px]:gap-36">
 
-        <!-- ============ HERO ============ -->
         <div class="relative flex flex-col">
           <section class="relative">
             <div class="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 px-10 min-[1280px]:px-0 pt-12">
@@ -651,45 +663,91 @@ tailwind.config = {
                 </p>
               </div>
 
-              <!-- Hero buttons -->
               <div class="flex flex-col items-center gap-3">
                 <div class="flex items-center gap-3">
-                  <a href="#" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
-                  <a href="#channels" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
+                  <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
+                  <a href="https://www.fedpromptly.com/tokens" target="_blank" rel="noopener noreferrer" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
                 </div>
               </div>
 
-              <!-- Phone mockup -->
-              <div class="mt-8 w-full flex justify-center" style="mask-image: linear-gradient(black 0%, black calc(100% - 59px), transparent 100%);">
+              <!-- Animated phone mockup (static container, animated inner content) -->
+              <div class="mt-8 w-full flex justify-center" style="mask-image: linear-gradient(black 0%, black calc(100% - 59px), transparent 100%); -webkit-mask-image: linear-gradient(black 0%, black calc(100% - 59px), transparent 100%);">
                 <div class="phone">
                   <div class="phone-screen">
                     <div class="chat-topbar">
                       <div class="chat-avatar" style="background:linear-gradient(180deg,#3A3A3A,#1F1F1F);color:#fff">F</div>
                       <div class="chat-name">FED-OS Forum<small><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#62AA73;margin-right:3px;vertical-align:middle;"></span>24 online</small></div>
                     </div>
-                    <div class="chat-body">
-                      <div class="channel-row active" style="animation-delay:.1s">
-                        <i class="fa-solid fa-hashtag"></i><span>general</span><span class="badge">12</span>
-                      </div>
-                      <div class="channel-row" style="animation-delay:.2s">
-                        <i class="fa-solid fa-fire"></i><span>trending</span><span class="badge">5</span>
-                      </div>
-                      <div class="channel-row" style="animation-delay:.3s">
-                        <i class="fa-solid fa-bullhorn"></i><span>announcements</span>
-                      </div>
-                      <div class="channel-row" style="animation-delay:.4s">
-                        <i class="fa-solid fa-circle-question"></i><span>questions</span><span class="badge">3</span>
-                      </div>
-                      <div class="channel-row" style="animation-delay:.5s">
-                        <i class="fa-solid fa-book-open"></i><span>guides</span>
-                      </div>
-                      <div class="channel-row" style="animation-delay:.6s">
-                        <i class="fa-solid fa-icons"></i><span>icons</span>
-                      </div>
-                      <div class="mini-topic" style="animation-delay:.8s">
-                        <div class="meta">#announcements · 3h ago</div>
-                        <div class="title">FED-OS 3.0 is live 🎉</div>
-                        <div class="excerpt">The whole hub has been rebuilt around a Slack / Discord style shell…</div>
+                    <div class="phone-scroll">
+                      <div class="phone-scroll-track">
+                        <div class="phone-scroll-group">
+                          <div class="channel-row active"><i class="fa-solid fa-hashtag"></i><span>general</span><span class="badge">12</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-fire"></i><span>trending</span><span class="badge">5</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#announcements · 3h ago</div>
+                            <div class="title">FED-OS 3.0 is live 🎉</div>
+                            <div class="excerpt">The whole hub has been rebuilt around a Slack / Discord style shell…</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-bullhorn"></i><span>announcements</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-circle-question"></i><span>questions</span><span class="badge">3</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#questions · 5h ago</div>
+                            <div class="title">Wire a custom MCP?</div>
+                            <div class="excerpt">HTTP bridge is the safe bet right now. stdio support is on the roadmap.</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-book-open"></i><span>guides</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-icons"></i><span>icons</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#guides · 1d ago</div>
+                            <div class="title">First FED recipe in 10 minutes</div>
+                            <div class="excerpt">A gentle walkthrough for beginners — followed verbatim, worked first try.</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-sticky-note"></i><span>notes</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-rss"></i><span>feed</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-lock"></i><span>subscribers</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-bookmark"></i><span>bookmarks</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-hashtag"></i><span>general</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-fire"></i><span>trending</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#announcements · 2d ago</div>
+                            <div class="title">Desktop app beta is open</div>
+                            <div class="excerpt">Same account, same recipes, native window. DM a moderator for an invite.</div>
+                          </div>
+                        </div>
+                        <div class="phone-scroll-group" aria-hidden="true">
+                          <div class="channel-row active"><i class="fa-solid fa-hashtag"></i><span>general</span><span class="badge">12</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-fire"></i><span>trending</span><span class="badge">5</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#announcements · 3h ago</div>
+                            <div class="title">FED-OS 3.0 is live 🎉</div>
+                            <div class="excerpt">The whole hub has been rebuilt around a Slack / Discord style shell…</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-bullhorn"></i><span>announcements</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-circle-question"></i><span>questions</span><span class="badge">3</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#questions · 5h ago</div>
+                            <div class="title">Wire a custom MCP?</div>
+                            <div class="excerpt">HTTP bridge is the safe bet right now. stdio support is on the roadmap.</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-book-open"></i><span>guides</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-icons"></i><span>icons</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#guides · 1d ago</div>
+                            <div class="title">First FED recipe in 10 minutes</div>
+                            <div class="excerpt">A gentle walkthrough for beginners — followed verbatim, worked first try.</div>
+                          </div>
+                          <div class="channel-row"><i class="fa-solid fa-sticky-note"></i><span>notes</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-rss"></i><span>feed</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-lock"></i><span>subscribers</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-bookmark"></i><span>bookmarks</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-hashtag"></i><span>general</span></div>
+                          <div class="channel-row"><i class="fa-solid fa-fire"></i><span>trending</span></div>
+                          <div class="mini-topic">
+                            <div class="meta">#announcements · 2d ago</div>
+                            <div class="title">Desktop app beta is open</div>
+                            <div class="excerpt">Same account, same recipes, native window. DM a moderator for an invite.</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -715,7 +773,6 @@ tailwind.config = {
               <div class="relative mx-auto w-full max-w-[1280px]">
                 <div id="integration-carousel" class="scroll-fade relative mx-auto flex w-full max-w-[1248px] flex-col gap-7 pt-14 pb-12 min-[712px]:max-w-[1200px] min-[712px]:gap-8 min-[712px]:py-0 min-[712px]:pt-40 min-[712px]:pb-32" style="clip-path: inset(-9999px 0 -9999px 0)">
 
-                  <!-- Row A -->
                   <div class="carousel-track" data-row="a">
                     <div class="carousel-copy">
                       <div class="app-icon" title="general"><i class="fa-solid fa-hashtag"></i></div>
@@ -755,7 +812,6 @@ tailwind.config = {
                     </div>
                   </div>
 
-                  <!-- Row B -->
                   <div class="carousel-track hidden min-[712px]:flex" data-row="b">
                     <div class="carousel-copy">
                       <div class="app-icon plum" title="bookmarks"><i class="fa-solid fa-bookmark"></i></div>
@@ -791,7 +847,6 @@ tailwind.config = {
               </div>
             </div>
 
-            <!-- Footnote (1) -->
             <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-20 px-6 min-[712px]:gap-24 min-[712px]:px-10 min-[1280px]:px-0">
               <div class="flex w-full flex-col items-start gap-2 text-left min-[712px]:mx-auto min-[712px]:max-w-lg">
                 <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:ml-10 min-[712px]:text-lg">(1)</span>
@@ -810,14 +865,12 @@ tailwind.config = {
           <div class="flex flex-col items-center gap-14 min-[712px]:gap-28">
             <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-15 min-[712px]:gap-23">
 
-              <!-- (2) Themes -->
               <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row min-[880px]:self-start reveal">
                 <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
                   <div class="bento-card" data-size="short" aria-hidden="true">
                     <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 30% 20%, #eef2f7 0%, #e6e9ef 50%, #dde1e8 100%); opacity:.55"></div>
 
                     <div class="absolute inset-0">
-                      <!-- Bone theme card -->
                       <div class="absolute" style="left:6.9%; top:52.9%; z-index:1">
                         <div class="recipe-card" style="transform: rotate(-10.67deg); --rot:-10.67deg">
                           <div class="theme-preview" style="background:linear-gradient(135deg,#FFFDFA 60%,#EEEBE6)"></div>
@@ -831,7 +884,6 @@ tailwind.config = {
                           <button class="mt-1 w-full rounded-[10px] border border-[#d7d6d3] py-2.5 text-sm font-medium text-black/65 bg-white">Apply</button>
                         </div>
                       </div>
-                      <!-- Parchment theme card -->
                       <div class="absolute" style="left:38.2%; top:39.7%; z-index:2">
                         <div class="recipe-card" style="transform: rotate(-2deg); --rot:-2deg">
                           <div class="theme-preview" style="background:linear-gradient(135deg,#FBF6EC 60%,#EDE4D2)"></div>
@@ -845,7 +897,6 @@ tailwind.config = {
                           <button class="mt-1 w-full rounded-[10px] border border-[#d7d6d3] py-2.5 text-sm font-medium text-black/65 bg-white">Apply</button>
                         </div>
                       </div>
-                      <!-- Ink theme card -->
                       <div class="absolute" style="left:74.6%; top:34%; z-index:3">
                         <div class="recipe-card" style="transform: rotate(8.62deg); --rot:8.62deg">
                           <div class="theme-preview" style="background:linear-gradient(135deg,#111114 60%,#242429)"></div>
@@ -876,12 +927,10 @@ tailwind.config = {
 
               <div aria-hidden="true" class="divider"></div>
 
-              <!-- (3) Trending -->
               <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row-reverse min-[880px]:self-end reveal">
                 <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
                   <div class="bento-card" data-size="medium" aria-hidden="true">
                     <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 70% 30%, #f3eee6 0%, #e9e2d6 55%, #ded5c7 100%); opacity:.6"></div>
-                    <!-- mini phone with trending -->
                     <div class="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[62%] aspect-[45/92] rounded-[34px] bg-gradient-to-b from-[#3a3a3c] to-[#0a0a0a] p-2 shadow-2xl">
                       <div class="relative w-full h-full rounded-[26px] overflow-hidden flex flex-col" style="background:#FFFDFA">
                         <div class="flex items-center gap-2 px-3 pt-6 pb-2 border-b border-black/5">
@@ -919,7 +968,6 @@ tailwind.config = {
 
               <div aria-hidden="true" class="divider"></div>
 
-              <!-- (4) Members -->
               <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row min-[880px]:self-start reveal">
                 <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
                   <div class="bento-card" data-size="medium" aria-hidden="true">
@@ -960,12 +1008,10 @@ tailwind.config = {
 
               <div aria-hidden="true" class="divider"></div>
 
-              <!-- (5) Build -->
               <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row-reverse min-[880px]:self-end reveal">
                 <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
                   <div class="bento-card" data-size="short" aria-hidden="true">
                     <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 60% 20%, #f4f0e8 0%, #ebe5da 55%, #e0d8ca 100%); opacity:.55"></div>
-                    <!-- build box -->
                     <div class="absolute top-1/2 left-[8%] -translate-y-1/2 w-[800px] max-w-[85%]">
                       <div class="flex min-h-[126px] w-full flex-col rounded-3xl border border-[#D4D4D4] bg-white shadow-lg">
                         <div class="mt-1">
@@ -1015,7 +1061,6 @@ tailwind.config = {
                   <p class="max-w-[440px] text-left font-sans text-base font-medium leading-[1.4] text-black/70 min-[712px]:text-center min-[712px]:text-lg">Every tier gets the full forum. Start free, then support the project if it becomes part of your day</p>
                 </div>
 
-                <!-- toggle -->
                 <div class="relative flex items-center rounded-full border border-black/10 bg-black/[0.035] p-1 h-10 w-56">
                   <div id="toggle-pill" class="absolute w-[calc(50%-0.25rem)] rounded-full bg-white shadow-[0px_0px_1px_rgba(0,0,0,0.2),0px_2px_4px_rgba(0,0,0,0.04),0px_16px_22px_rgba(0,0,0,0.03)] transition-transform duration-200 ease-in-out h-8" style="transform: translateX(0)"></div>
                   <button id="btn-monthly" type="button" aria-pressed="true" class="relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black">Monthly</button>
@@ -1025,7 +1070,6 @@ tailwind.config = {
 
               <div class="flex w-full flex-col min-[712px]:flex-row flex-wrap justify-center gap-5 min-[712px]:gap-6 pt-3">
 
-                <!-- Free -->
                 <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-3 min-[712px]:order-none shadow-[0_10px_40px_-12px_rgba(0,0,0,0.10),0_2px_6px_rgba(0,0,0,0.03)] border-marketing-border">
                   <div class="flex flex-col gap-1">
                     <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Free</h4>
@@ -1045,11 +1089,10 @@ tailwind.config = {
                     <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>All seven themes</li>
                   </ul>
                   <div class="mt-auto">
-                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Enter Forum</a>
+                    <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Enter Forum</a>
                   </div>
                 </div>
 
-                <!-- Member -->
                 <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-1 min-[712px]:order-none shadow-[0_10px_40px_-12px_rgba(0,0,0,0.10),0_2px_6px_rgba(0,0,0,0.03)] border-marketing-border">
                   <div class="flex flex-col gap-1">
                     <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Member</h4>
@@ -1070,11 +1113,10 @@ tailwind.config = {
                     <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Upload attachments up to 10MB</li>
                   </ul>
                   <div class="mt-auto">
-                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Get Member</a>
+                    <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Get Member</a>
                   </div>
                 </div>
 
-                <!-- Supporter -->
                 <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-2 min-[712px]:order-none gradient-border shadow-[0_0_36px_2px_rgba(66,129,175,0.06),0_8px_50px_6px_rgba(66,129,175,0.035)] border-ocean/40">
                   <div class="flex flex-col gap-1">
                     <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Supporter</h4>
@@ -1095,7 +1137,7 @@ tailwind.config = {
                     <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Ko-fi supporter wall</li>
                   </ul>
                   <div class="mt-auto">
-                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Support FED Hub</a>
+                    <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Support FED Hub</a>
                   </div>
                 </div>
 
@@ -1118,10 +1160,7 @@ tailwind.config = {
 
             <div id="tweets-marquee" class="scroll-fade w-full max-w-[1248px] py-6 min-[712px]:pt-8 min-[712px]:pb-5" style="clip-path: inset(-9999px 0 -9999px 0)">
               <div class="tweets-track">
-
-                <!-- copy 1 -->
                 <div class="flex shrink-0 items-start gap-4 pr-4 min-[712px]:gap-6 min-[712px]:pr-6">
-
                   <a href="#" class="tweet-card">
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
@@ -1239,12 +1278,9 @@ tailwind.config = {
                     </div>
                     <div class="text-sm leading-[18px] text-[#1a1a1a]">I run the icons channel. It's the warmest corner of the internet.</div>
                   </a>
-
                 </div>
 
-                <!-- copy 2 (duplicate for seamless loop) -->
                 <div class="flex shrink-0 items-start gap-4 pr-4 min-[712px]:gap-6 min-[712px]:pr-6" aria-hidden="true">
-
                   <a href="#" class="tweet-card" tabindex="-1">
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
@@ -1362,9 +1398,7 @@ tailwind.config = {
                     </div>
                     <div class="text-sm leading-[18px] text-[#1a1a1a]">I run the icons channel. It's the warmest corner of the internet.</div>
                   </a>
-
                 </div>
-
               </div>
             </div>
 
@@ -1386,13 +1420,13 @@ tailwind.config = {
                 <h3 class="w-full font-exposure text-black text-[32px] max-[374px]:text-[30px] max-[339px]:text-[26px] min-[712px]:text-[52px] leading-[1.05] min-[712px]:leading-none tracking-[-0.03em] min-[712px]:tracking-[-0.04em]">Join the conversation<br>with just a text</h3>
 
                 <div class="flex flex-col items-center gap-3 min-[712px]:hidden">
-                  <a href="#top" class="btn-dark h-12 max-w-[357px] gap-2.5 rounded-2xl px-10 w-auto min-w-[290px] text-base">Enter Forum</a>
-                  <a href="#channels" class="btn-light h-12 w-auto min-w-[290px] rounded-2xl px-10 text-base">Browse Channels</a>
+                  <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-12 max-w-[357px] gap-2.5 rounded-2xl px-10 w-auto min-w-[290px] text-base">Enter Forum</a>
+                  <a href="https://www.fedpromptly.com/tokens" target="_blank" rel="noopener noreferrer" class="btn-light h-12 w-auto min-w-[290px] rounded-2xl px-10 text-base">Browse Channels</a>
                 </div>
 
                 <div class="hidden min-[712px]:flex items-center gap-3">
-                  <a href="#top" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
-                  <a href="#channels" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
+                  <a href="https://www.fedpromptly.com/social" target="_blank" rel="noopener noreferrer" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
+                  <a href="https://www.fedpromptly.com/tokens" target="_blank" rel="noopener noreferrer" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
                 </div>
               </div>
             </div>
@@ -1454,7 +1488,6 @@ tailwind.config = {
           </span>
         </div>
 
-        <!-- giant footer logo -->
         <div class="flex justify-center pt-14 min-[712px]:pt-16" style="transform: translateY(10%)">
           <div class="w-[min(100%,1000px)] select-none">
             <svg viewBox="0 0 1140 298" class="w-full h-auto" aria-label="FED Hub logo">
@@ -1513,7 +1546,6 @@ tailwind.config = {
 </div>
 
 <script>
-  /* ---------------- Mobile menu ---------------- */
   (function () {
     const dialog = document.getElementById('menu-dialog');
     const panel = document.getElementById('menu-panel');
@@ -1546,7 +1578,6 @@ tailwind.config = {
     window.__closeMobileMenu = closeMenu;
   })();
 
-  /* ---------------- Pricing toggle ---------------- */
   (function () {
     const monthlyBtn = document.getElementById('btn-monthly');
     const yearlyBtn = document.getElementById('btn-yearly');
@@ -1578,7 +1609,6 @@ tailwind.config = {
     }
   })();
 
-  /* ---------------- Reveal on scroll ---------------- */
   (function () {
     const els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window)) {
@@ -1596,7 +1626,6 @@ tailwind.config = {
     els.forEach(el => io.observe(el));
   })();
 
-  /* ---------------- Activate marquees when visible ---------------- */
   (function () {
     function activate(el, cls) {
       if (!el) return;
@@ -1613,7 +1642,6 @@ tailwind.config = {
     activate(document.getElementById('tweets-marquee'), 'tweets-active');
   })();
 
-  /* ---------------- Smooth scroll for in-page links ---------------- */
   (function () {
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', (e) => {
@@ -1663,7 +1691,6 @@ tailwind.config = {
     const forgotPassword = $('forgotPassword');
     const rememberMe     = $('rememberMe');
 
-    /* ── Message helpers ── */
     function showMessage(msg, type = 'error') {
       authMessage.textContent = msg;
       authMessage.className = 'login-message ' + type;
@@ -1673,7 +1700,6 @@ tailwind.config = {
       authMessage.textContent = '';
     }
 
-    /* ── Modal open/close ── */
     function openModal(mode = 'signin') {
       isSignUp = mode === 'signup';
       syncAuthUI();
@@ -1700,7 +1726,6 @@ tailwind.config = {
       hideMessage();
     }
 
-    /* ── UI sync ── */
     function updateUIForUser(user) {
       loginBtns.forEach(btn => {
         if (user) {
@@ -1751,7 +1776,6 @@ tailwind.config = {
         : (isSignUp ? 'Sign Up' : 'Sign In');
     }
 
-    /* ── Logout ── */
     async function handleLogout() {
       try {
         await supabaseClient.auth.signOut();
@@ -1762,7 +1786,6 @@ tailwind.config = {
       }
     }
 
-    /* ── Login triggers ── */
     loginBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         if (currentUser) {
@@ -1785,14 +1808,12 @@ tailwind.config = {
       });
     });
 
-    /* ── Close interactions ── */
     closeModalBtn.addEventListener('click', closeModal);
     loginModal.addEventListener('click', (e) => { if (e.target === loginModal) closeModal(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && loginModal.classList.contains('active')) closeModal();
     });
 
-    /* ── Mode toggle ── */
     toggleAuthMode.addEventListener('click', () => {
       if (isSubmitting) return;
       isSignUp = !isSignUp;
@@ -1801,7 +1822,6 @@ tailwind.config = {
       try { loginEmail.focus(); } catch {}
     });
 
-    /* ── Forgot password ── */
     forgotPassword.addEventListener('click', async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -1826,7 +1846,6 @@ tailwind.config = {
       }
     });
 
-    /* ── Sign in ── */
     async function handleLogin(email, password) {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -1837,7 +1856,6 @@ tailwind.config = {
       setTimeout(() => { if (loginModal.classList.contains('active')) closeModal(); }, 900);
     }
 
-    /* ── Sign up ── */
     async function handleSignUp(email, password) {
       const { data, error } = await supabaseClient.auth.signUp({
         email, password,
@@ -1863,7 +1881,6 @@ tailwind.config = {
       setTimeout(() => { if (loginModal.classList.contains('active')) closeModal(); }, 900);
     }
 
-    /* ── Form submit ── */
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -1891,7 +1908,6 @@ tailwind.config = {
       }
     });
 
-    /* ── Error translation ── */
     function friendlyError(err) {
       const msg = String((err && (err.message || err.error_description)) || '');
       if (/invalid login credentials/i.test(msg)) return 'Invalid email or password.';
@@ -1904,7 +1920,6 @@ tailwind.config = {
       return msg || 'Something went wrong. Please try again.';
     }
 
-    /* ── Remember me ── */
     function persistRememberMe(email) {
       try {
         if (rememberMe.checked) localStorage.setItem('fedos_remember_email', email);
@@ -1912,14 +1927,12 @@ tailwind.config = {
       } catch {}
     }
 
-    /* ── Clear error while typing ── */
     [loginEmail, loginPassword].forEach((el) => {
       el.addEventListener('input', () => {
         if (authMessage.classList.contains('error')) hideMessage();
       });
     });
 
-    /* ── Auth state listener ── */
     supabaseClient.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         currentUser = session.user;
@@ -1939,7 +1952,6 @@ tailwind.config = {
       }
     });
 
-    /* ── Restore session on load ── */
     (async function checkSession() {
       loginBtns.forEach(btn => {
         const text = btn.querySelector('[data-login-text]');
@@ -1964,7 +1976,6 @@ tailwind.config = {
       }
     })();
 
-    /* ── Public API ── */
     window.FedAuth = {
       client: supabaseClient,
       getUser: () => currentUser,
