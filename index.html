@@ -15,6 +15,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -319,6 +321,173 @@ tailwind.config = {
 
   /* Build box cursor */
   @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+  /* ============================================================
+     LOGIN MODULE — appended
+     ============================================================ */
+
+  /* ── Login button ── */
+  .login-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 12px; border-radius: 10px;
+    background: transparent; border: none; cursor: pointer;
+    color: #1C1C1C; font-family: inherit; font-size: 14px;
+    font-weight: 500; transition: background 0.2s;
+  }
+  .login-btn:hover { background: rgba(0,0,0,0.04); }
+  .login-btn .user-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #F5F1EA; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 12px; overflow: hidden;
+  }
+  .login-btn.logged-in .user-avatar {
+    background: rgba(98, 170, 115, 0.14); color: #62AA73;
+    font-weight: 600;
+  }
+
+  /* ── Login Modal ── */
+  .login-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(30, 25, 20, 0.45);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 99999; justify-content: center; align-items: center;
+    padding: 20px; overflow-y: auto;
+  }
+  .login-modal-overlay.active { display: flex; }
+  body.login-modal-open { overflow: hidden; }
+
+  .login-modal-card {
+    background: #FFFFFF; border: 1px solid #E2E1DE;
+    border-radius: 22px; max-width: 440px; width: 100%;
+    padding: 30px;
+    box-shadow: 0 24px 70px -16px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.05);
+    position: relative; max-height: 90vh; overflow-y: auto;
+    animation: loginModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes loginModalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .login-modal-card .login-close {
+    position: absolute; top: 14px; right: 16px;
+    font-size: 1.4rem; cursor: pointer;
+    color: rgba(0,0,0,0.5); transition: color 0.2s, background 0.2s;
+    background: none; border: none; line-height: 1;
+    width: 32px; height: 32px; border-radius: 8px;
+  }
+  .login-modal-card .login-close:hover { color: #1C1C1C; background: #F5F1EA; }
+
+  .login-modal-card h2 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-size: 1.7rem; font-weight: 400;
+    color: #1C1C1C; margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+  .login-modal-card .login-sub {
+    color: rgba(0,0,0,0.7); font-size: 0.9rem; margin-bottom: 22px;
+  }
+
+  .login-modal-card .login-form-group { margin-bottom: 16px; }
+  .login-modal-card .login-form-group label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: rgba(0,0,0,0.7); margin-bottom: 6px;
+  }
+  .login-modal-card .login-form-group input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid #E2E1DE; border-radius: 12px;
+    font-size: 0.9rem; font-family: inherit;
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #F5F1EA; color: #1C1C1C;
+  }
+  .login-modal-card .login-form-group input::placeholder { color: rgba(0,0,0,0.35); }
+  .login-modal-card .login-form-group input:focus {
+    outline: none; border-color: #2483E2;
+    box-shadow: 0 0 0 3px rgba(36, 131, 226, 0.08);
+    background: #FFFFFF;
+  }
+
+  .login-modal-card .login-form-options {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 6px 0 18px; font-size: 0.84rem;
+  }
+  .login-modal-card .login-form-options label {
+    display: flex; align-items: center; gap: 7px;
+    color: rgba(0,0,0,0.7); cursor: pointer;
+  }
+  .login-modal-card .login-form-options label input[type="checkbox"] {
+    width: 16px; height: 16px; accent-color: #2483E2;
+  }
+  .login-modal-card .login-form-options a {
+    color: #2483E2; cursor: pointer; font-weight: 500;
+  }
+  .login-modal-card .login-form-options a:hover { text-decoration: underline; }
+
+  .login-modal-card .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; cursor: pointer; user-select: none; white-space: nowrap;
+    font-family: inherit; font-weight: 500; color: #fff;
+    text-shadow: 0 0.5px 0 rgba(0,0,0,0.5);
+    background: linear-gradient(180deg, #3A3A3A 0%, #3A3A3A 52.4%, #2C2C2C 80.29%, #1F1F1F 100%);
+    box-shadow:
+      0 0.5px 1px rgba(0,0,0,0.08),
+      0 1px 3px rgba(0,0,0,0.1),
+      0 4px 12px rgba(0,0,0,0.08),
+      inset 0 0 0 1.25px #353535,
+      inset 0 0 12px 0 rgba(255,255,255,0.1);
+    transition: transform 150ms ease-out, filter 150ms ease-out;
+    touch-action: manipulation;
+    padding: 12px 18px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4;
+    width: 100%; justify-content: center;
+  }
+  .login-modal-card .btn-primary:hover { filter: brightness(1.2); }
+  .login-modal-card .btn-primary:active { transform: scale(0.98); }
+  .login-modal-card .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; filter: none; }
+
+  .login-modal-card .login-divider {
+    display: flex; align-items: center; gap: 14px; margin: 20px 0;
+  }
+  .login-modal-card .login-divider::before,
+  .login-modal-card .login-divider::after {
+    content: ''; flex: 1; height: 1px; background: #E2E1DE;
+  }
+  .login-modal-card .login-divider span {
+    font-size: 0.72rem; color: rgba(0,0,0,0.5);
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+
+  .login-modal-card .login-toggle-auth {
+    text-align: center; font-size: 0.86rem;
+    color: rgba(0,0,0,0.7); margin-top: 16px;
+  }
+  .login-modal-card .login-toggle-auth button {
+    background: none; border: none; color: #2483E2;
+    font-weight: 600; cursor: pointer;
+    font-size: 0.86rem; font-family: inherit;
+  }
+  .login-modal-card .login-toggle-auth button:hover { text-decoration: underline; }
+
+  .login-modal-card .login-message {
+    padding: 10px 13px; border-radius: 10px;
+    font-size: 0.84rem; margin-top: 10px; display: none;
+  }
+  .login-modal-card .login-message.error {
+    display: block; background: rgba(201,69,61,0.1);
+    color: #c9453d; border: 1px solid rgba(201,69,61,0.3);
+  }
+  .login-modal-card .login-message.success {
+    display: block; background: rgba(98,170,115,0.14);
+    color: #62AA73; border: 1px solid rgba(98,170,115,0.3);
+  }
+  .login-modal-card .login-message.info {
+    display: block; background: rgba(36,131,226,0.1);
+    color: #2483E2; border: 1px solid rgba(36,131,226,0.3);
+  }
+
+  /* Focus states */
+  button:focus-visible, a:focus-visible,
+  input:focus-visible { outline: 2px solid #2483E2; outline-offset: 2px; }
 </style>
 </head>
 
@@ -376,7 +545,10 @@ tailwind.config = {
       </div>
 
       <div class="col-start-3 flex items-center justify-self-end">
-        <a class="text-[15px] leading-none font-medium text-inherit pl-3.5 py-5 hover:opacity-60 transition-opacity" href="#">Log in</a>
+        <button class="login-btn" data-login-trigger title="Login" aria-haspopup="dialog">
+          <span class="user-avatar">👤</span>
+          <span data-login-text>Login</span>
+        </button>
         <div class="pl-7">
           <a href="#top" class="btn-dark h-10 rounded-xl px-5 text-[15px]">Enter Forum</a>
         </div>
@@ -393,12 +565,17 @@ tailwind.config = {
         </div>
         <span class="font-exposure text-[15px]">FED Hub</span>
       </a>
-      <button id="menu-open" type="button" class="inline-flex items-center justify-center rounded-full text-inherit" aria-label="Open menu" aria-expanded="false">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="size-[22px]" aria-hidden="true">
-          <path d="M2.10156 7.73242H21.9006" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M21.9006 16.2669H2.10156" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <div class="flex items-center gap-1">
+        <button class="login-btn" data-login-trigger title="Login" aria-haspopup="dialog" style="padding:4px 6px;gap:0">
+          <span class="user-avatar" style="width:28px;height:28px;font-size:12px">👤</span>
+        </button>
+        <button id="menu-open" type="button" class="inline-flex items-center justify-center rounded-full text-inherit" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="size-[22px]" aria-hidden="true">
+            <path d="M2.10156 7.73242H21.9006" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M21.9006 16.2669H2.10156" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </header>
   </div>
 
@@ -426,6 +603,9 @@ tailwind.config = {
             <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#channels">Channels</a></li>
             <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#plans">Plans</a></li>
             <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#community">Community</a></li>
+            <li>
+              <a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#" data-open-login>Log in</a>
+            </li>
           </ul>
         </nav>
         <div class="mx-1 mt-auto flex flex-col items-center gap-3 px-6 py-[calc(env(safe-area-inset-bottom)+1.5rem)]">
@@ -1230,7 +1410,7 @@ tailwind.config = {
         <div class="grid grid-cols-2 gap-x-12 gap-y-15 min-[712px]:grid-cols-4 min-[712px]:gap-x-20 min-[712px]:gap-y-14">
           <div class="flex flex-col items-start gap-5">
             <div class="text-[15px] leading-none font-medium text-black/50">Forum</div>
-            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">Log in</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#" data-open-login>Log in</a>
             <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#channels">Channels</a>
             <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#features">Features</a>
             <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#plans">Plans</a>
@@ -1296,6 +1476,42 @@ tailwind.config = {
 
 </div>
 
+<!-- ================= LOGIN MODAL ================= -->
+<div class="login-modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+  <div class="login-modal-card">
+    <button class="login-close" id="loginCloseModal" aria-label="Close">&times;</button>
+    <h2 id="loginModalTitle">Sign In</h2>
+    <p class="login-sub" id="loginModalSub">Enter your credentials to continue</p>
+
+    <form id="loginForm" novalidate>
+      <div class="login-form-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" name="email" placeholder="you@example.com" autocomplete="email" required />
+      </div>
+
+      <div class="login-form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
+      </div>
+
+      <div class="login-form-options">
+        <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+        <a id="forgotPassword" role="button" tabindex="0">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-primary" id="authSubmitBtn">Sign In</button>
+      <div id="authMessage" class="login-message" role="status" aria-live="polite"></div>
+
+      <div class="login-divider"><span>or</span></div>
+
+      <div class="login-toggle-auth">
+        <span id="toggleText">New here?</span>
+        <button type="button" id="toggleAuthMode">Sign Up</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   /* ---------------- Mobile menu ---------------- */
   (function () {
@@ -1326,6 +1542,8 @@ tailwind.config = {
     if (closeBtn) closeBtn.addEventListener('click', closeMenu);
     if (backdrop) backdrop.addEventListener('click', closeMenu);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+    window.__closeMobileMenu = closeMenu;
   })();
 
   /* ---------------- Pricing toggle ---------------- */
@@ -1407,6 +1625,352 @@ tailwind.config = {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
+  })();
+
+  /* ============================================================
+     LOGIN MODULE
+     ============================================================ */
+  (function () {
+    'use strict';
+
+    const SUPABASE_URL = 'https://qyuczfpgydgqywgthgrz.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2NLEuDREplLS9DgUXeA8Tw_f8MJOhCq';
+
+    if (!window.supabase || !window.supabase.createClient) {
+      console.error('[auth] Supabase SDK failed to load.');
+      return;
+    }
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    let currentUser = null;
+    let isSignUp = false;
+    let isSubmitting = false;
+
+    const $ = (id) => document.getElementById(id);
+    const loginBtns      = document.querySelectorAll('[data-login-trigger]');
+    const openLoginLinks = document.querySelectorAll('[data-open-login]');
+    const loginModal     = $('loginModal');
+    const closeModalBtn  = $('loginCloseModal');
+    const loginForm      = $('loginForm');
+    const loginEmail     = $('loginEmail');
+    const loginPassword  = $('loginPassword');
+    const authSubmitBtn  = $('authSubmitBtn');
+    const authMessage    = $('authMessage');
+    const modalTitle     = $('loginModalTitle');
+    const modalSub       = $('loginModalSub');
+    const toggleAuthMode = $('toggleAuthMode');
+    const toggleText     = $('toggleText');
+    const forgotPassword = $('forgotPassword');
+    const rememberMe     = $('rememberMe');
+
+    /* ── Message helpers ── */
+    function showMessage(msg, type = 'error') {
+      authMessage.textContent = msg;
+      authMessage.className = 'login-message ' + type;
+    }
+    function hideMessage() {
+      authMessage.className = 'login-message';
+      authMessage.textContent = '';
+    }
+
+    /* ── Modal open/close ── */
+    function openModal(mode = 'signin') {
+      isSignUp = mode === 'signup';
+      syncAuthUI();
+      hideMessage();
+      loginModal.classList.add('active');
+      document.body.classList.add('login-modal-open');
+
+      try {
+        const savedEmail = localStorage.getItem('fedos_remember_email');
+        if (savedEmail) {
+          loginEmail.value = savedEmail;
+          rememberMe.checked = true;
+        }
+      } catch {}
+
+      setTimeout(() => {
+        try { loginEmail.focus({ preventScroll: true }); } catch {}
+      }, 60);
+    }
+    function closeModal() {
+      if (isSubmitting) return;
+      loginModal.classList.remove('active');
+      document.body.classList.remove('login-modal-open');
+      hideMessage();
+    }
+
+    /* ── UI sync ── */
+    function updateUIForUser(user) {
+      loginBtns.forEach(btn => {
+        if (user) {
+          btn.classList.add('logged-in');
+          const name = user.email ? user.email.split('@')[0] : 'User';
+          const text = btn.querySelector('[data-login-text]');
+          if (text) text.textContent = name;
+          const avatar = btn.querySelector('.user-avatar');
+          if (avatar) avatar.textContent = name.charAt(0).toUpperCase();
+          btn.title = 'Click to sign out';
+        } else {
+          btn.classList.remove('logged-in');
+          const text = btn.querySelector('[data-login-text]');
+          if (text) text.textContent = 'Login';
+          const avatar = btn.querySelector('.user-avatar');
+          if (avatar) avatar.textContent = '👤';
+          btn.title = 'Click to sign in';
+        }
+      });
+    }
+
+    function syncAuthUI() {
+      if (isSignUp) {
+        modalTitle.textContent = 'Create Account';
+        modalSub.textContent = 'Join the community';
+        authSubmitBtn.textContent = 'Sign Up';
+        toggleAuthMode.textContent = 'Sign In';
+        toggleText.textContent = 'Already have an account?';
+        loginPassword.setAttribute('autocomplete', 'new-password');
+      } else {
+        modalTitle.textContent = 'Sign In';
+        modalSub.textContent = 'Enter your credentials to continue';
+        authSubmitBtn.textContent = 'Sign In';
+        toggleAuthMode.textContent = 'Sign Up';
+        toggleText.textContent = 'New here?';
+        loginPassword.setAttribute('autocomplete', 'current-password');
+      }
+    }
+
+    function setLoading(on) {
+      isSubmitting = on;
+      authSubmitBtn.disabled = on;
+      toggleAuthMode.disabled = on;
+      forgotPassword.style.pointerEvents = on ? 'none' : '';
+      forgotPassword.style.opacity = on ? '0.5' : '';
+      authSubmitBtn.textContent = on
+        ? (isSignUp ? 'Creating…' : 'Signing in…')
+        : (isSignUp ? 'Sign Up' : 'Sign In');
+    }
+
+    /* ── Logout ── */
+    async function handleLogout() {
+      try {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        updateUIForUser(null);
+      } catch (err) {
+        console.error('[auth] logout error', err);
+      }
+    }
+
+    /* ── Login triggers ── */
+    loginBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (currentUser) {
+          if (confirm('Sign out of FED Hub?')) handleLogout();
+          return;
+        }
+        openModal('signin');
+      });
+    });
+
+    openLoginLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.__closeMobileMenu) window.__closeMobileMenu();
+        if (currentUser) {
+          if (confirm('Sign out of FED Hub?')) handleLogout();
+        } else {
+          openModal('signin');
+        }
+      });
+    });
+
+    /* ── Close interactions ── */
+    closeModalBtn.addEventListener('click', closeModal);
+    loginModal.addEventListener('click', (e) => { if (e.target === loginModal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && loginModal.classList.contains('active')) closeModal();
+    });
+
+    /* ── Mode toggle ── */
+    toggleAuthMode.addEventListener('click', () => {
+      if (isSubmitting) return;
+      isSignUp = !isSignUp;
+      syncAuthUI();
+      hideMessage();
+      try { loginEmail.focus(); } catch {}
+    });
+
+    /* ── Forgot password ── */
+    forgotPassword.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      const email = loginEmail.value.trim();
+      if (!email) {
+        showMessage('Enter your email address first.', 'error');
+        loginEmail.focus();
+        return;
+      }
+      setLoading(true);
+      hideMessage();
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + window.location.pathname
+        });
+        if (error) throw error;
+        showMessage('Check your inbox — we sent a password reset link.', 'info');
+      } catch (err) {
+        showMessage(friendlyError(err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    /* ── Sign in ── */
+    async function handleLogin(email, password) {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      currentUser = data.user;
+      updateUIForUser(currentUser);
+      persistRememberMe(email);
+      showMessage('Welcome back, ' + email.split('@')[0] + '!', 'success');
+      setTimeout(() => { if (loginModal.classList.contains('active')) closeModal(); }, 900);
+    }
+
+    /* ── Sign up ── */
+    async function handleSignUp(email, password) {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email, password,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      if (error) throw error;
+
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        isSignUp = false;
+        syncAuthUI();
+        showMessage('That email is already registered. Try signing in instead.', 'error');
+        return;
+      }
+      if (!data.session) {
+        showMessage('Check your inbox to confirm your account, then sign in.', 'info');
+        setLoading(false);
+        return;
+      }
+      currentUser = data.user;
+      updateUIForUser(currentUser);
+      persistRememberMe(email);
+      showMessage('Account created. Welcome, ' + email.split('@')[0] + '!', 'success');
+      setTimeout(() => { if (loginModal.classList.contains('active')) closeModal(); }, 900);
+    }
+
+    /* ── Form submit ── */
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value;
+
+      if (!email) { showMessage('Please enter your email.', 'error'); loginEmail.focus(); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        showMessage('That email address doesn\'t look right.', 'error'); loginEmail.focus(); return;
+      }
+      if (!password || password.length < 6) {
+        showMessage('Password must be at least 6 characters.', 'error'); loginPassword.focus(); return;
+      }
+
+      hideMessage();
+      setLoading(true);
+      try {
+        if (isSignUp) await handleSignUp(email, password);
+        else await handleLogin(email, password);
+      } catch (err) {
+        showMessage(friendlyError(err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    /* ── Error translation ── */
+    function friendlyError(err) {
+      const msg = String((err && (err.message || err.error_description)) || '');
+      if (/invalid login credentials/i.test(msg)) return 'Invalid email or password.';
+      if (/email not confirmed/i.test(msg)) return 'Please confirm your email before signing in.';
+      if (/user already registered/i.test(msg)) return 'That email is already registered. Try signing in.';
+      if (/password should be at least/i.test(msg)) return 'Password must be at least 6 characters.';
+      if (/rate limit/i.test(msg)) return 'Too many attempts. Wait a moment and try again.';
+      if (/network|fetch/i.test(msg)) return 'Network error. Check your connection and try again.';
+      if (/invalid email/i.test(msg)) return 'Please enter a valid email address.';
+      return msg || 'Something went wrong. Please try again.';
+    }
+
+    /* ── Remember me ── */
+    function persistRememberMe(email) {
+      try {
+        if (rememberMe.checked) localStorage.setItem('fedos_remember_email', email);
+        else localStorage.removeItem('fedos_remember_email');
+      } catch {}
+    }
+
+    /* ── Clear error while typing ── */
+    [loginEmail, loginPassword].forEach((el) => {
+      el.addEventListener('input', () => {
+        if (authMessage.classList.contains('error')) hideMessage();
+      });
+    });
+
+    /* ── Auth state listener ── */
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        updateUIForUser(currentUser);
+        if (loginModal.classList.contains('active')) closeModal();
+      }
+      if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        updateUIForUser(null);
+      }
+      if (event === 'USER_UPDATED' && session) {
+        currentUser = session.user;
+        updateUIForUser(currentUser);
+      }
+      if (event === 'PASSWORD_RECOVERY') {
+        showMessage('You can now set a new password.', 'info');
+      }
+    });
+
+    /* ── Restore session on load ── */
+    (async function checkSession() {
+      loginBtns.forEach(btn => {
+        const text = btn.querySelector('[data-login-text]');
+        const avatar = btn.querySelector('.user-avatar');
+        if (text) text.style.opacity = '0';
+        if (avatar) avatar.style.opacity = '0';
+      });
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        if (session) currentUser = session.user;
+      } catch (err) {
+        console.error('[auth] session check error', err);
+      } finally {
+        updateUIForUser(currentUser);
+        loginBtns.forEach(btn => {
+          const text = btn.querySelector('[data-login-text]');
+          const avatar = btn.querySelector('.user-avatar');
+          if (text) text.style.opacity = '1';
+          if (avatar) avatar.style.opacity = '1';
+        });
+      }
+    })();
+
+    /* ── Public API ── */
+    window.FedAuth = {
+      client: supabaseClient,
+      getUser: () => currentUser,
+      open: () => openModal('signin'),
+      openSignUp: () => openModal('signup')
+    };
   })();
 </script>
 
