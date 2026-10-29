@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+<meta name="theme-color" content="#FDFBF7" />
+<title>FED Hub — FED-OS Forum</title>
+<meta name="description" content="A calm, focused community hub for FED builders and creators. Slack/Discord-style channels, seven themes, real conversations." />
+<meta property="og:title" content="FED Hub — FED-OS Forum" />
+<meta property="og:description" content="A calm, focused community hub for FED builders and creators." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231C1C1C'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='%23FDFBF7' font-family='Georgia,serif'%3EF%3C/text%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        exposure: ['"Instrument Serif"', 'Georgia', 'Times New Roman', 'serif'],
+      },
+      colors: {
+        ocean: '#4281AF',
+        marketing: { border: '#E2E1DE' },
+      },
+    },
+  },
+};
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background-color: rgb(238, 235, 230);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .font-exposure { font-family: "Instrument Serif", Georgia, "Times New Roman", serif; font-weight: 400; }
+
+  /* ---------- Noise overlay ---------- */
+  .noise-overlay {
+    position: fixed; inset: 0; z-index: 100; pointer-events: none;
+    opacity: 0.04; mix-blend-mode: difference;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 120px 120px; background-repeat: repeat;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn-dark {
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 0; cursor: pointer; user-select: none; white-space: nowrap;
+    font-family: inherit; font-weight: 500; color: #fff;
+    text-shadow: 0 0.5px 0 rgba(0,0,0,0.5);
+    background: linear-gradient(180deg, #3A3A3A 0%, #3A3A3A 52.4%, #2C2C2C 80.29%, #1F1F1F 100%);
+    box-shadow:
+      0 0.5px 1px rgba(0,0,0,0.08),
+      0 1px 3px rgba(0,0,0,0.1),
+      0 4px 12px rgba(0,0,0,0.08),
+      inset 0 0 0 1.25px #353535,
+      inset 0 0 12px 0 rgba(255,255,255,0.1);
+    transition: transform 150ms ease-out, filter 150ms ease-out;
+    touch-action: manipulation;
+  }
+  .btn-dark:hover { filter: brightness(1.2); }
+  .btn-dark:active { transform: scale(0.98); }
+
+  .btn-light {
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 0; cursor: pointer; user-select: none; white-space: nowrap;
+    font-family: inherit; font-weight: 500; color: #1C1C1C;
+    text-shadow: 0 0.5px 0 #FFF;
+    background: linear-gradient(180deg, #EDECEA 0%, #EDECEA 65%, #DCDCDC 85%, #C4C4C4 100%);
+    box-shadow:
+      0 0.5px 1px rgba(0,0,0,0.04),
+      0 1px 3px rgba(0,0,0,0.06),
+      0 4px 12px rgba(0,0,0,0.04),
+      inset 0 0 0 1.25px #C9C7C4,
+      inset 0 0 12.2px 0 #FFF;
+    transition: transform 150ms ease-out, filter 150ms ease-out;
+    touch-action: manipulation;
+  }
+  .btn-light:hover { filter: brightness(0.985); }
+  .btn-light:active { transform: scale(0.98); }
+
+  /* ---------- Hero texture ---------- */
+  .hero-texture {
+    background: radial-gradient(120% 80% at 50% 0%, #f6f2ea 0%, #eee8dd 40%, #e2dacd 70%, #d8cfc0 100%);
+    filter: contrast(1.03) brightness(0.98);
+  }
+  .hero-texture::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02 0.03' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.5 0 0 0 0 0.44 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+    background-size: 900px 900px; mix-blend-mode: multiply; opacity: 0.9;
+  }
+  .hero-mask {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 16.5%, black 30%, black 70%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 16.5%, black 30%, black 70%, transparent 100%);
+  }
+
+  /* ---------- Phone mockup ---------- */
+  .phone {
+    position: relative; width: 100%; max-width: 300px;
+    aspect-ratio: 45 / 92; border-radius: 46px;
+    background: linear-gradient(160deg, #3a3a3c 0%, #131315 40%, #050505 100%);
+    padding: 9px;
+    box-shadow:
+      0 40px 80px -30px rgba(0,0,0,0.45),
+      0 20px 40px -20px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.12);
+  }
+  .phone::before {
+    content: ""; position: absolute;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    width: 74px; height: 20px; background: #060606;
+    border-radius: 20px; z-index: 3;
+  }
+  .phone-screen {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 38px; overflow: hidden;
+    background: #FFFDFA;
+    display: flex; flex-direction: column;
+  }
+  .chat-topbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 30px 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: rgba(250,247,241,0.94);
+    backdrop-filter: blur(8px);
+  }
+  .chat-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(180deg, #3A3A3A, #1F1F1F);
+    display: grid; place-items: center;
+    font-size: 13px; color: #fff; font-weight: 600;
+  }
+  .chat-name { font-size: 12px; font-weight: 600; color: #111; }
+  .chat-name small { display: block; font-size: 9px; font-weight: 400; color: #999; }
+  .chat-body {
+    flex: 1; padding: 12px 12px;
+    display: flex; flex-direction: column; gap: 5px;
+    overflow: hidden; background: #FFFDFA;
+  }
+  .channel-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 8px;
+    font-size: 11px; color: #5c5c70;
+    animation: bubble-in 0.5s ease both;
+  }
+  .channel-row i { font-size: 10px; width: 12px; text-align: center; color: #9b9baf; }
+  .channel-row.active { background: #EEEBE6; color: #1C1C1C; font-weight: 600; }
+  .channel-row.active i { color: #4281AF; }
+  .channel-row .badge {
+    margin-left: auto; font-size: 8.5px; font-weight: 600;
+    padding: 1px 6px; border-radius: 99px;
+    background: #EDE4D2; color: #8a6a3a;
+  }
+  .mini-topic {
+    margin-top: 8px; padding: 10px;
+    border-radius: 12px; border: 1px solid #E2E1DE;
+    background: #FFFDFA; font-size: 10.5px; line-height: 1.45;
+  }
+  .mini-topic .meta { font-size: 9px; color: #9b9baf; margin-bottom: 3px; }
+  .mini-topic .title { font-weight: 600; color: #1C1C1C; }
+  .mini-topic .excerpt { color: #5c5c70; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  @keyframes bubble-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Carousel ---------- */
+  @keyframes carousel-a { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
+  @keyframes carousel-b { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+  .carousel-track { display: flex; width: max-content; align-items: center; animation-play-state: paused; }
+  .carousel-track[data-row="a"] { animation: carousel-a 115s linear infinite; }
+  .carousel-track[data-row="b"] { animation: carousel-b 115s linear infinite; animation-delay: -38s; }
+  .carousel-active .carousel-track { animation-play-state: running; }
+  .carousel-copy { display: flex; align-items: center; flex-shrink: 0; gap: 20px; padding-right: 20px; }
+  @media (min-width: 712px) { .carousel-copy { gap: 28px; padding-right: 28px; } }
+
+  .app-icon {
+    flex-shrink: 0; width: 32px; height: 32px;
+    border-radius: 8px; display: grid; place-items: center;
+    font-size: 14px; color: #fff;
+    background: linear-gradient(180deg, #3A3A3A, #1F1F1F);
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+    transition: transform 200ms ease;
+  }
+  @media (min-width: 712px) {
+    .app-icon { width: 44px; height: 44px; border-radius: 12px; font-size: 17px; }
+  }
+  .app-icon:hover { transform: translateY(-2px); }
+  .app-icon.accent { background: linear-gradient(180deg, #4281AF, #2b6fb0); }
+  .app-icon.warm { background: linear-gradient(180deg, #B8892E, #8a6a3a); }
+  .app-icon.green { background: linear-gradient(180deg, #5C8A6A, #3f6a4a); }
+  .app-icon.rose { background: linear-gradient(180deg, #B85C77, #8a3f55); }
+  .app-icon.plum { background: linear-gradient(180deg, #7E5A8A, #5a3a66); }
+
+  .scroll-fade {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 4rem, black calc(100% - 4rem), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, black 4rem, black calc(100% - 4rem), transparent 100%);
+  }
+  @media (min-width: 768px) {
+    .scroll-fade {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, black 5rem, black calc(100% - 5rem), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, black 5rem, black calc(100% - 5rem), transparent 100%);
+    }
+  }
+
+  /* ---------- Bento cards ---------- */
+  .bento-card {
+    position: relative; display: flex; flex-direction: column; align-items: center;
+    width: 100%; min-width: 288px; max-width: 612px;
+    margin: 0 auto; border-radius: 24px;
+    border: 1px solid #CBC9C5; background: #FFFDFA;
+    overflow: clip; box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+    height: 336px;
+  }
+  .bento-card[data-size="medium"] { height: 368px; }
+  .bento-card[data-size="tall"]   { height: 400px; }
+
+  .recipe-card {
+    position: absolute; width: 290px; padding: 18px;
+    border-radius: 22px; background: #fff;
+    border: 1px solid #e2e1de;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.035),
+      0 3px 8px rgba(0,0,0,0.035),
+      0 8px 28px rgba(0,0,0,0.045);
+    display: flex; flex-direction: column; gap: 10px;
+    transition: transform 200ms ease-out;
+  }
+  .recipe-card:hover { transform: translateY(-4px) rotate(var(--rot, 0deg)) !important; }
+
+  .pinned-avatar {
+    width: 73px; height: 73px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: #fff; font-weight: 600; font-size: 22px;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.08);
+  }
+  @media (min-width: 712px) {
+    .pinned-avatar { width: 90px; height: 90px; font-size: 26px; }
+  }
+
+  /* ---------- Tweets marquee ---------- */
+  @keyframes tweets-scroll { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+  .tweets-track {
+    display: flex; width: max-content; align-items: flex-start;
+    animation: tweets-scroll 380s linear infinite;
+    animation-play-state: paused;
+  }
+  .tweets-active .tweets-track { animation-play-state: running; }
+  .tweets-track:hover { animation-play-state: paused; }
+  .tweet-card {
+    width: 280px; height: 150px; flex-shrink: 0; padding: 20px;
+    border-radius: 20px; border: 1px solid #e2e1de; background: #fff;
+    display: flex; flex-direction: column; gap: 8px; overflow: hidden;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.035),
+      0 3px 8px rgba(0,0,0,0.035),
+      0 8px 28px rgba(0,0,0,0.045);
+    transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
+  }
+  .tweet-card:hover {
+    border-color: #dbd9d5;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.035),
+      0 3px 10px rgba(0,0,0,0.035),
+      0 8px 28px rgba(0,0,0,0.045),
+      0 10px 40px 4px rgba(0,0,0,0.03);
+  }
+  @media (min-width: 712px) { .tweet-card { width: 340px; height: 190px; } }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 700ms cubic-bezier(.22,1,.36,1), transform 700ms cubic-bezier(.22,1,.36,1); }
+  .reveal.is-visible { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Misc ---------- */
+  .divider { height: 1px; width: 100%; background: #D4D1CB; }
+
+  .gradient-border { position: relative; }
+  .gradient-border::before {
+    content: ""; position: absolute; inset: -1px;
+    border-radius: inherit; padding: 1px;
+    background: linear-gradient(120deg, rgba(66,129,175,0.55), rgba(255,255,255,0.85), rgba(66,129,175,0.55));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none; background-size: 200% 200%;
+    animation: gradient-shift 6s ease infinite;
+  }
+  @keyframes gradient-shift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+  .menu-scroll { overflow-y: auto; overscroll-behavior: contain; }
+
+  /* Theme preview swatches for bento #2 */
+  .theme-preview {
+    height: 56px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08);
+    position: relative; overflow: hidden;
+  }
+  .theme-preview::after {
+    content: ""; position: absolute; left: 8px; top: 8px;
+    width: 28px; height: 6px; border-radius: 99px;
+    background: rgba(255,255,255,0.55);
+  }
+
+  /* Build box cursor */
+  @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+</style>
+</head>
+
+<body class="font-sans" style="background-color: rgb(238, 235, 230);">
+
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- Hidden SVG filter defs (parity with Poke) -->
+<svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute h-0 w-0" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="smoky-filter-texture" x="-30%" y="-120%" width="160%" height="340%" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
+      <feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur"></feGaussianBlur>
+      <feTurbulence type="fractalNoise" baseFrequency="0.999 0.999" numOctaves="3" seed="7444"></feTurbulence>
+      <feDisplacementMap in="effect1_foregroundBlur" scale="2" xChannelSelector="R" yChannelSelector="G" result="displacedImage" width="100%" height="100%"></feDisplacementMap>
+      <feMerge result="effect2_texture"><feMergeNode in="displacedImage"></feMergeNode></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<div data-landing-v2 class="relative w-full overflow-x-clip" style="background-color:#FFFDFA">
+
+  <!-- ================= HERO BACKGROUND TEXTURE ================= -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 overflow-hidden hero-mask" style="opacity:0.2">
+    <div class="absolute left-0 w-full hero-texture" style="top:0;height:100vh;background-size:cover;background-position:center;"></div>
+    <div class="absolute left-0 w-full hero-texture" style="top:100vh;height:100vh;background-size:cover;background-position:center;transform:scaleY(-1);"></div>
+    <div class="absolute left-0 w-full hero-texture" style="top:200vh;height:100vh;background-size:cover;background-position:center;"></div>
+  </div>
+
+  <!-- ================= DESKTOP HEADER ================= -->
+  <div class="relative z-50 hidden min-[712px]:block">
+    <header class="relative z-50 mx-auto grid h-[76px] w-full max-w-[1200px] grid-cols-3 items-center px-10 min-[1280px]:px-0" style="color:#000">
+      <div class="justify-self-start">
+        <a aria-label="FED Hub home" class="inline-flex items-center gap-3 text-inherit" href="#top">
+          <div class="inline-flex items-center justify-center rounded-xl" style="width:32px;height:32px;background:linear-gradient(180deg,#3A3A3A,#1F1F1F);color:#fff;box-shadow:0 0.5px 1px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.1),inset 0 0 0 1.25px #353535;">
+            <i class="fa-solid fa-comments" style="font-size:13px"></i>
+          </div>
+          <div class="leading-tight">
+            <div class="font-exposure text-[17px]" style="letter-spacing:-.01em">FED Hub</div>
+            <div class="text-[10px] font-medium uppercase tracking-[.08em] text-black/40">FED-OS Forum</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="hidden justify-self-center min-[900px]:block">
+        <nav aria-label="Primary">
+          <ul class="flex items-center">
+            <li><a class="inline-flex items-center text-[15px] leading-none font-medium text-inherit px-3.5 py-5 hover:opacity-60 transition-opacity" href="#features">Features</a></li>
+            <li><a class="inline-flex items-center text-[15px] leading-none font-medium text-inherit px-3.5 py-5 hover:opacity-60 transition-opacity" href="#channels">Channels</a></li>
+            <li><a class="inline-flex items-center text-[15px] leading-none font-medium text-inherit px-3.5 py-5 hover:opacity-60 transition-opacity" href="#plans">Plans</a></li>
+            <li><a class="inline-flex items-center text-[15px] leading-none font-medium text-inherit px-3.5 py-5 hover:opacity-60 transition-opacity" href="#community">Community</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="col-start-3 flex items-center justify-self-end">
+        <a class="text-[15px] leading-none font-medium text-inherit pl-3.5 py-5 hover:opacity-60 transition-opacity" href="#">Log in</a>
+        <div class="pl-7">
+          <a href="#top" class="btn-dark h-10 rounded-xl px-5 text-[15px]">Enter Forum</a>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- ================= MOBILE HEADER ================= -->
+  <div class="relative z-50 min-[712px]:hidden">
+    <header class="z-50 flex h-[calc(env(safe-area-inset-top)+64px)] items-center justify-between px-6 pt-[env(safe-area-inset-top)]" style="color:#000">
+      <a aria-label="FED Hub home" class="inline-flex items-center gap-2 text-inherit" href="#top">
+        <div class="inline-flex items-center justify-center rounded-lg" style="width:28px;height:28px;background:linear-gradient(180deg,#3A3A3A,#1F1F1F);color:#fff;box-shadow:inset 0 0 0 1.25px #353535;">
+          <i class="fa-solid fa-comments" style="font-size:11px"></i>
+        </div>
+        <span class="font-exposure text-[15px]">FED Hub</span>
+      </a>
+      <button id="menu-open" type="button" class="inline-flex items-center justify-center rounded-full text-inherit" aria-label="Open menu" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="size-[22px]" aria-hidden="true">
+          <path d="M2.10156 7.73242H21.9006" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M21.9006 16.2669H2.10156" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+  </div>
+
+  <!-- ================= MOBILE MENU ================= -->
+  <div id="menu-dialog" class="fixed inset-0 z-[60] hidden">
+    <div id="menu-backdrop" class="absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300"></div>
+    <div id="menu-panel" class="absolute inset-x-0 bottom-0 top-[env(safe-area-inset-top)] overflow-hidden rounded-b-none shadow-2xl ring-1 ring-black/10 bg-[#FDFBF7]/95 backdrop-blur-xl translate-y-full transition-transform duration-300 ease-out">
+      <div class="relative flex h-full min-h-0 flex-col menu-scroll">
+        <div class="flex items-center justify-between px-6 h-16">
+          <a aria-label="FED Hub home" class="inline-flex items-center gap-2 text-black" href="#top">
+            <div class="inline-flex items-center justify-center rounded-lg" style="width:26px;height:26px;background:linear-gradient(180deg,#3A3A3A,#1F1F1F);color:#fff;">
+              <i class="fa-solid fa-comments" style="font-size:10px"></i>
+            </div>
+            <span class="font-exposure text-[15px]">FED Hub</span>
+          </a>
+          <button id="menu-close" type="button" class="inline-flex items-center justify-center rounded-full text-black/90" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="size-[22px]" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <nav class="mt-6">
+          <ul class="flex flex-col gap-2">
+            <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#features">Features</a></li>
+            <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#channels">Channels</a></li>
+            <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#plans">Plans</a></li>
+            <li><a class="flex w-full h-18 items-center border-b border-black/10 px-6 py-2 font-exposure text-[24px] leading-[130%] tracking-[-0.24px] text-[#000]" href="#community">Community</a></li>
+          </ul>
+        </nav>
+        <div class="mx-1 mt-auto flex flex-col items-center gap-3 px-6 py-[calc(env(safe-area-inset-bottom)+1.5rem)]">
+          <a href="#top" class="btn-dark h-12 w-full max-w-[357px] gap-2.5 rounded-2xl px-10 text-base">Enter Forum</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN ================= -->
+  <main id="top">
+    <div class="flex flex-col gap-0">
+      <div class="flex flex-col gap-20 min-[712px]:gap-36">
+
+        <!-- ============ HERO ============ -->
+        <div class="relative flex flex-col">
+          <section class="relative">
+            <div class="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 px-10 min-[1280px]:px-0 pt-12">
+
+              <div class="flex flex-col items-center gap-3.5 min-[712px]:gap-5">
+                <div class="flex flex-col items-center gap-7 min-[712px]:gap-12">
+                  <div class="[@media(max-height:576px)]:hidden">
+                    <a class="inline-flex items-center gap-2 min-[712px]:gap-3 whitespace-nowrap rounded-full" href="#features">
+                      <span class="rounded-full bg-[#EEEBE6] border border-[#C7C7C7] pl-[11px] pr-2.5 py-1.5 text-[12px] min-[712px]:text-[13px] leading-none font-medium text-[#1C1C1C]" style="text-shadow:0 0.5px 0 #FFF">New</span>
+                      <span class="inline-flex items-center gap-0.5 min-[712px]:gap-1 text-[14px] min-[712px]:text-[15px] tracking-[-0.08px] leading-none font-medium text-[#1C1C1C]">
+                        FED-OS 3.0 “Server Layout” is live
+                        <svg class="mt-px size-4 text-[#837D7C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                      </span>
+                    </a>
+                  </div>
+
+                  <h1 class="font-exposure text-center text-[32px] max-[374px]:text-[30px] max-[339px]:text-[26px] min-[712px]:text-[52px] leading-[1.05] min-[712px]:leading-none tracking-[-0.03em] min-[712px]:tracking-[-0.04em] text-black">
+                    <span class="sr-only">Meet FED Hub, your new favorite forum</span>
+                    <span aria-hidden="true">
+                      Meet FED Hub,<br class="min-[712px]:hidden"/>
+                      your new favorite forum
+                    </span>
+                  </h1>
+                </div>
+
+                <p class="text-[15px] min-[712px]:text-base font-medium leading-[130%] tracking-[-0.08px] text-black/70 text-center max-w-[540px]">
+                  A calm, focused community for FED builders and creators
+                </p>
+              </div>
+
+              <!-- Hero buttons -->
+              <div class="flex flex-col items-center gap-3">
+                <div class="flex items-center gap-3">
+                  <a href="#" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
+                  <a href="#channels" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
+                </div>
+              </div>
+
+              <!-- Phone mockup -->
+              <div class="mt-8 w-full flex justify-center" style="mask-image: linear-gradient(black 0%, black calc(100% - 59px), transparent 100%);">
+                <div class="phone">
+                  <div class="phone-screen">
+                    <div class="chat-topbar">
+                      <div class="chat-avatar" style="background:linear-gradient(180deg,#3A3A3A,#1F1F1F);color:#fff">F</div>
+                      <div class="chat-name">FED-OS Forum<small><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#62AA73;margin-right:3px;vertical-align:middle;"></span>24 online</small></div>
+                    </div>
+                    <div class="chat-body">
+                      <div class="channel-row active" style="animation-delay:.1s">
+                        <i class="fa-solid fa-hashtag"></i><span>general</span><span class="badge">12</span>
+                      </div>
+                      <div class="channel-row" style="animation-delay:.2s">
+                        <i class="fa-solid fa-fire"></i><span>trending</span><span class="badge">5</span>
+                      </div>
+                      <div class="channel-row" style="animation-delay:.3s">
+                        <i class="fa-solid fa-bullhorn"></i><span>announcements</span>
+                      </div>
+                      <div class="channel-row" style="animation-delay:.4s">
+                        <i class="fa-solid fa-circle-question"></i><span>questions</span><span class="badge">3</span>
+                      </div>
+                      <div class="channel-row" style="animation-delay:.5s">
+                        <i class="fa-solid fa-book-open"></i><span>guides</span>
+                      </div>
+                      <div class="channel-row" style="animation-delay:.6s">
+                        <i class="fa-solid fa-icons"></i><span>icons</span>
+                      </div>
+                      <div class="mini-topic" style="animation-delay:.8s">
+                        <div class="meta">#announcements · 3h ago</div>
+                        <div class="title">FED-OS 3.0 is live 🎉</div>
+                        <div class="excerpt">The whole hub has been rebuilt around a Slack / Discord style shell…</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+
+        <!-- ============ INTEGRATIONS CAROUSEL ============ -->
+        <section id="channels" class="relative z-30 w-full" style="clip-path: inset(-9999px 0 -9999px 0)">
+          <div class="flex flex-col gap-14 min-[712px]:gap-16">
+
+            <div class="mx-auto flex w-full max-w-[1200px] flex-col px-6 min-[712px]:px-10 min-[1280px]:px-0">
+              <h2 class="relative flex flex-col font-exposure leading-[1.2] tracking-[-0.02em] min-[712px]:tracking-[-0.03em] text-[26px] min-[712px]:text-4xl">
+                <span class="self-start text-black">Fits into your workflow<span class="font-sans font-semibold text-black/40 text-base align-top min-[712px]:text-xl"> (1)</span>,</span>
+                <span class="self-end text-black/55">not the other way around</span>
+              </h2>
+            </div>
+
+            <div class="min-[712px]:px-10 min-[1280px]:px-0">
+              <div class="relative mx-auto w-full max-w-[1280px]">
+                <div id="integration-carousel" class="scroll-fade relative mx-auto flex w-full max-w-[1248px] flex-col gap-7 pt-14 pb-12 min-[712px]:max-w-[1200px] min-[712px]:gap-8 min-[712px]:py-0 min-[712px]:pt-40 min-[712px]:pb-32" style="clip-path: inset(-9999px 0 -9999px 0)">
+
+                  <!-- Row A -->
+                  <div class="carousel-track" data-row="a">
+                    <div class="carousel-copy">
+                      <div class="app-icon" title="general"><i class="fa-solid fa-hashtag"></i></div>
+                      <div class="app-icon accent" title="trending"><i class="fa-solid fa-fire"></i></div>
+                      <div class="app-icon warm" title="announcements"><i class="fa-solid fa-bullhorn"></i></div>
+                      <div class="app-icon" title="questions"><i class="fa-solid fa-circle-question"></i></div>
+                      <div class="app-icon green" title="guides"><i class="fa-solid fa-book-open"></i></div>
+                      <div class="app-icon rose" title="icons"><i class="fa-solid fa-icons"></i></div>
+                      <div class="app-icon" title="notes"><i class="fa-solid fa-sticky-note"></i></div>
+                      <div class="app-icon accent" title="feed"><i class="fa-solid fa-rss"></i></div>
+                      <div class="app-icon" title="subscribers"><i class="fa-solid fa-lock"></i></div>
+                      <div class="app-icon plum" title="bookmarks"><i class="fa-solid fa-bookmark"></i></div>
+                      <div class="app-icon" title="members"><i class="fa-solid fa-users"></i></div>
+                      <div class="app-icon warm" title="themes"><i class="fa-solid fa-palette"></i></div>
+                      <div class="app-icon" title="realtime"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="app-icon green" title="moderation"><i class="fa-solid fa-shield-halved"></i></div>
+                      <div class="app-icon" title="recipes"><i class="fa-solid fa-code"></i></div>
+                      <div class="app-icon rose" title="community"><i class="fa-solid fa-comments"></i></div>
+                    </div>
+                    <div class="carousel-copy" aria-hidden="true">
+                      <div class="app-icon"><i class="fa-solid fa-hashtag"></i></div>
+                      <div class="app-icon accent"><i class="fa-solid fa-fire"></i></div>
+                      <div class="app-icon warm"><i class="fa-solid fa-bullhorn"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-circle-question"></i></div>
+                      <div class="app-icon green"><i class="fa-solid fa-book-open"></i></div>
+                      <div class="app-icon rose"><i class="fa-solid fa-icons"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-sticky-note"></i></div>
+                      <div class="app-icon accent"><i class="fa-solid fa-rss"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-lock"></i></div>
+                      <div class="app-icon plum"><i class="fa-solid fa-bookmark"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-users"></i></div>
+                      <div class="app-icon warm"><i class="fa-solid fa-palette"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="app-icon green"><i class="fa-solid fa-shield-halved"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-code"></i></div>
+                      <div class="app-icon rose"><i class="fa-solid fa-comments"></i></div>
+                    </div>
+                  </div>
+
+                  <!-- Row B -->
+                  <div class="carousel-track hidden min-[712px]:flex" data-row="b">
+                    <div class="carousel-copy">
+                      <div class="app-icon plum" title="bookmarks"><i class="fa-solid fa-bookmark"></i></div>
+                      <div class="app-icon" title="members"><i class="fa-solid fa-users"></i></div>
+                      <div class="app-icon warm" title="themes"><i class="fa-solid fa-palette"></i></div>
+                      <div class="app-icon" title="realtime"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="app-icon green" title="moderation"><i class="fa-solid fa-shield-halved"></i></div>
+                      <div class="app-icon" title="recipes"><i class="fa-solid fa-code"></i></div>
+                      <div class="app-icon rose" title="community"><i class="fa-solid fa-comments"></i></div>
+                      <div class="app-icon" title="general"><i class="fa-solid fa-hashtag"></i></div>
+                      <div class="app-icon accent" title="trending"><i class="fa-solid fa-fire"></i></div>
+                      <div class="app-icon warm" title="announcements"><i class="fa-solid fa-bullhorn"></i></div>
+                      <div class="app-icon" title="questions"><i class="fa-solid fa-circle-question"></i></div>
+                      <div class="app-icon green" title="guides"><i class="fa-solid fa-book-open"></i></div>
+                    </div>
+                    <div class="carousel-copy" aria-hidden="true">
+                      <div class="app-icon plum"><i class="fa-solid fa-bookmark"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-users"></i></div>
+                      <div class="app-icon warm"><i class="fa-solid fa-palette"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="app-icon green"><i class="fa-solid fa-shield-halved"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-code"></i></div>
+                      <div class="app-icon rose"><i class="fa-solid fa-comments"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-hashtag"></i></div>
+                      <div class="app-icon accent"><i class="fa-solid fa-fire"></i></div>
+                      <div class="app-icon warm"><i class="fa-solid fa-bullhorn"></i></div>
+                      <div class="app-icon"><i class="fa-solid fa-circle-question"></i></div>
+                      <div class="app-icon green"><i class="fa-solid fa-book-open"></i></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Footnote (1) -->
+            <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-20 px-6 min-[712px]:gap-24 min-[712px]:px-10 min-[1280px]:px-0">
+              <div class="flex w-full flex-col items-start gap-2 text-left min-[712px]:mx-auto min-[712px]:max-w-lg">
+                <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:ml-10 min-[712px]:text-lg">(1)</span>
+                <p class="font-medium leading-[1.4] text-black/70 text-lg min-[712px]:ml-10">
+                  All the channels and tools you need, with a familiar interface (<span class="text-black/40">Slack, Discord, forums</span>)<span class="min-[712px]:block"> and a community who keeps things as real as a friend.</span>
+                </p>
+              </div>
+              <div aria-hidden="true" class="divider"></div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ============ BENTO SECTION ============ -->
+        <section id="features" class="relative z-50 mx-auto w-full max-w-[1200px] min-[712px]:px-10 min-[1280px]:px-0">
+          <div class="flex flex-col items-center gap-14 min-[712px]:gap-28">
+            <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-15 min-[712px]:gap-23">
+
+              <!-- (2) Themes -->
+              <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row min-[880px]:self-start reveal">
+                <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
+                  <div class="bento-card" data-size="short" aria-hidden="true">
+                    <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 30% 20%, #eef2f7 0%, #e6e9ef 50%, #dde1e8 100%); opacity:.55"></div>
+
+                    <div class="absolute inset-0">
+                      <!-- Bone theme card -->
+                      <div class="absolute" style="left:6.9%; top:52.9%; z-index:1">
+                        <div class="recipe-card" style="transform: rotate(-10.67deg); --rot:-10.67deg">
+                          <div class="theme-preview" style="background:linear-gradient(135deg,#FFFDFA 60%,#EEEBE6)"></div>
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <h3 class="text-[17px] font-medium leading-snug text-black">Bone</h3>
+                              <p class="text-[12px] leading-[1.4] text-black/50">Warm cream · default</p>
+                            </div>
+                            <span class="w-6 h-6 rounded-full" style="background:linear-gradient(135deg,#1C1C1C,#4281AF)"></span>
+                          </div>
+                          <button class="mt-1 w-full rounded-[10px] border border-[#d7d6d3] py-2.5 text-sm font-medium text-black/65 bg-white">Apply</button>
+                        </div>
+                      </div>
+                      <!-- Parchment theme card -->
+                      <div class="absolute" style="left:38.2%; top:39.7%; z-index:2">
+                        <div class="recipe-card" style="transform: rotate(-2deg); --rot:-2deg">
+                          <div class="theme-preview" style="background:linear-gradient(135deg,#FBF6EC 60%,#EDE4D2)"></div>
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <h3 class="text-[17px] font-medium leading-snug text-black">Parchment</h3>
+                              <p class="text-[12px] leading-[1.4] text-black/50">Deep tan · warm</p>
+                            </div>
+                            <span class="w-6 h-6 rounded-full" style="background:linear-gradient(135deg,#2A2318,#B8892E)"></span>
+                          </div>
+                          <button class="mt-1 w-full rounded-[10px] border border-[#d7d6d3] py-2.5 text-sm font-medium text-black/65 bg-white">Apply</button>
+                        </div>
+                      </div>
+                      <!-- Ink theme card -->
+                      <div class="absolute" style="left:74.6%; top:34%; z-index:3">
+                        <div class="recipe-card" style="transform: rotate(8.62deg); --rot:8.62deg">
+                          <div class="theme-preview" style="background:linear-gradient(135deg,#111114 60%,#242429)"></div>
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <h3 class="text-[17px] font-medium leading-snug text-black">Ink</h3>
+                              <p class="text-[12px] leading-[1.4] text-black/50">Near-black · focus</p>
+                            </div>
+                            <span class="w-6 h-6 rounded-full" style="background:linear-gradient(135deg,#F0ECE4,#7FB3DC)"></span>
+                          </div>
+                          <button class="mt-1 w-full rounded-[10px] border border-[#d7d6d3] py-2.5 text-sm font-medium text-black/65 bg-white">Apply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex w-full flex-col items-start gap-3 min-[712px]:gap-4 min-[880px]:flex-1 min-[880px]:min-w-0 min-[880px]:pl-12">
+                  <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:text-lg">(2)</span>
+                  <h3 class="font-exposure leading-[1.15] tracking-[-0.01em] min-[712px]:tracking-[-0.02em] text-black text-[26px] min-[712px]:text-4xl">Make it yours with seven themes</h3>
+                  <p class="self-stretch font-medium leading-[1.4] text-black/70 text-lg">Bone, Parchment, Sage, Blush, Slate, Ink, Midnight — plus eight accent colours. Changes apply instantly and stay on your device</p>
+                  <a class="mt-2 inline-flex items-center gap-1 self-start text-lg font-medium text-[#4281AF] min-[712px]:text-base" href="#plans">
+                    Learn more
+                    <svg class="size-4 min-[712px]:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6L20 12L14 18"/><path d="M19 12H4"/></svg>
+                  </a>
+                </div>
+              </div>
+
+              <div aria-hidden="true" class="divider"></div>
+
+              <!-- (3) Trending -->
+              <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row-reverse min-[880px]:self-end reveal">
+                <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
+                  <div class="bento-card" data-size="medium" aria-hidden="true">
+                    <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 70% 30%, #f3eee6 0%, #e9e2d6 55%, #ded5c7 100%); opacity:.6"></div>
+                    <!-- mini phone with trending -->
+                    <div class="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[62%] aspect-[45/92] rounded-[34px] bg-gradient-to-b from-[#3a3a3c] to-[#0a0a0a] p-2 shadow-2xl">
+                      <div class="relative w-full h-full rounded-[26px] overflow-hidden flex flex-col" style="background:#FFFDFA">
+                        <div class="flex items-center gap-2 px-3 pt-6 pb-2 border-b border-black/5">
+                          <div class="w-6 h-6 rounded-full grid place-items-center text-[11px] text-white font-semibold" style="background:linear-gradient(180deg,#3A3A3A,#1F1F1F)">F</div>
+                          <div class="text-[10px] font-semibold" style="color:#1C1C1C">Trending</div>
+                        </div>
+                        <div class="flex-1 p-2.5 flex flex-col gap-2">
+                          <div class="rounded-lg border border-[#E2E1DE] bg-white p-2">
+                            <div style="font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4281AF">announcements</div>
+                            <div style="font-size:10px;font-weight:600;color:#1C1C1C;margin-top:2px;line-height:1.3">FED-OS 3.0 is live 🎉</div>
+                            <div style="font-size:8px;color:#9b9baf;margin-top:3px">3 replies · 1.2k views</div>
+                          </div>
+                          <div class="rounded-lg border border-[#E2E1DE] bg-white p-2">
+                            <div style="font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#B8892E">guides</div>
+                            <div style="font-size:10px;font-weight:600;color:#1C1C1C;margin-top:2px;line-height:1.3">First FED recipe in 10 minutes</div>
+                            <div style="font-size:8px;color:#9b9baf;margin-top:3px">4 replies · 2.1k views</div>
+                          </div>
+                          <div class="rounded-lg border border-[#E2E1DE] bg-white p-2">
+                            <div style="font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5C8A6A">questions</div>
+                            <div style="font-size:10px;font-weight:600;color:#1C1C1C;margin-top:2px;line-height:1.3">Wire a custom MCP?</div>
+                            <div style="font-size:8px;color:#9b9baf;margin-top:3px">2 replies · 742 views</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex w-full flex-col items-start gap-3 min-[712px]:gap-4 min-[880px]:flex-1 min-[880px]:min-w-0 min-[880px]:pr-12">
+                  <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:text-lg">(3)</span>
+                  <h3 class="font-exposure leading-[1.15] tracking-[-0.01em] min-[712px]:tracking-[-0.02em] text-black text-[26px] min-[712px]:text-4xl">Stay on top of what's trending</h3>
+                  <p class="self-stretch font-medium leading-[1.4] text-black/70 text-lg">A weighted hot score surfaces the conversations worth joining — replies count double, views count once. No algorithmic noise</p>
+                </div>
+              </div>
+
+              <div aria-hidden="true" class="divider"></div>
+
+              <!-- (4) Members -->
+              <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row min-[880px]:self-start reveal">
+                <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
+                  <div class="bento-card" data-size="medium" aria-hidden="true">
+                    <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 40% 60%, #eef1f5 0%, #e4e8ee 55%, #d9dee6 100%); opacity:.6"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-7">
+                      <div class="flex gap-12">
+                        <div class="flex flex-col items-center gap-2">
+                          <div class="pinned-avatar" style="background:linear-gradient(135deg,#3A3A3A,#1F1F1F)">M</div>
+                          <span class="text-[13px] font-medium flex items-center gap-1" style="color:#6F6F72">Mara
+                            <svg class="size-3" style="color:#B8892E" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2.4 3.3-.5.5 3.3L21 12l-2.8 2.8.5 3.3-3.3.5L12 22l-2.4-2.4-3.3.5-.5-3.3L3 12l2.8-2.8-.5-3.3 3.3-.5z"/></svg>
+                          </span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                          <div class="pinned-avatar" style="background:linear-gradient(135deg,#4281AF,#2b6fb0)">K</div>
+                          <span class="text-[13px] font-medium" style="color:#6F6F72">Kai</span>
+                        </div>
+                      </div>
+                      <div class="flex gap-12">
+                        <div class="flex flex-col items-center gap-2">
+                          <div class="pinned-avatar" style="background:linear-gradient(135deg,#5C8A6A,#3f6a4a)">N</div>
+                          <span class="text-[13px] font-medium" style="color:#6F6F72">Nova</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                          <div class="pinned-avatar" style="background:linear-gradient(135deg,#B85C77,#8a3f55)">I</div>
+                          <span class="text-[13px] font-medium" style="color:#6F6F72">Iris</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex w-full flex-col items-start gap-3 min-[712px]:gap-4 min-[880px]:flex-1 min-[880px]:min-w-0 min-[880px]:pl-12">
+                  <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:text-lg">(4)</span>
+                  <h3 class="font-exposure leading-[1.15] tracking-[-0.01em] min-[712px]:tracking-[-0.02em] text-black text-[26px] min-[712px]:text-4xl">Meet the regulars</h3>
+                  <p class="self-stretch font-medium leading-[1.4] text-black/70 text-lg">Real builders, real answers. Every channel has its own cast of regulars — the ones who show up, help out, and remember your last thread</p>
+                </div>
+              </div>
+
+              <div aria-hidden="true" class="divider"></div>
+
+              <!-- (5) Build -->
+              <div class="flex w-full flex-col-reverse items-center gap-10 px-6 min-[712px]:px-0 min-[880px]:gap-14 min-[880px]:w-[85%] min-[880px]:flex-row-reverse min-[880px]:self-end reveal">
+                <div class="w-full min-[880px]:flex-1 min-[880px]:min-w-0">
+                  <div class="bento-card" data-size="short" aria-hidden="true">
+                    <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 60% 20%, #f4f0e8 0%, #ebe5da 55%, #e0d8ca 100%); opacity:.55"></div>
+                    <!-- build box -->
+                    <div class="absolute top-1/2 left-[8%] -translate-y-1/2 w-[800px] max-w-[85%]">
+                      <div class="flex min-h-[126px] w-full flex-col rounded-3xl border border-[#D4D4D4] bg-white shadow-lg">
+                        <div class="mt-1">
+                          <div class="flex min-h-[68px] flex-col items-start px-6 py-5">
+                            <span class="text-base text-[#171717]">Add a topic<span class="ml-[2px] inline-block w-[1.5px] bg-[#171717] align-[-0.2em]" style="height:1.1em; animation: blink 1s steps(2) infinite;"></span></span>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-3 pl-4 pr-5 pb-4">
+                          <div class="flex items-center gap-1.5 rounded-[10px] px-2.5 py-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 7V12M12 12V17M12 12H7M12 12H17" stroke="#A1A1A1" stroke-width="2" stroke-linecap="round"/></svg>
+                            <span class="text-[15px] font-medium text-[#A1A1A1]"># general</span>
+                          </div>
+                          <span class="text-[13px] text-[#A1A1A1]">⌘ Enter</span>
+                          <div class="ml-auto flex h-8 items-center gap-2 rounded-[10px] bg-[#171717] px-3.5 text-[#FAFAFA] text-[14px] font-medium">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FAFAFA"><path d="M16.5 3.5a2 2 0 0 1 2.8 2.8L7.5 18.1 4 19l.9-3.5z"/></svg>
+                            Publish
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex w-full flex-col items-start gap-3 min-[712px]:gap-4 min-[880px]:flex-1 min-[880px]:min-w-0 min-[880px]:pr-12">
+                  <span aria-hidden="true" class="font-sans font-semibold leading-none text-black/40 text-base min-[712px]:text-lg">(5)</span>
+                  <h3 class="font-exposure leading-[1.15] tracking-[-0.01em] min-[712px]:tracking-[-0.02em] text-black text-[26px] min-[712px]:text-4xl">Extends for more advanced use cases</h3>
+                  <p class="self-stretch font-medium leading-[1.4] text-black/70 text-lg">Tags, attachments, price labels, admin-only channels, members-only subscribers. The forum scales from casual chat to a real product surface</p>
+                  <a class="mt-2 inline-flex items-center gap-1 self-start text-lg font-medium text-[#4281AF] min-[712px]:text-base" href="#plans">
+                    Learn more
+                    <svg class="size-4 min-[712px]:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6L20 12L14 18"/><path d="M19 12H4"/></svg>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PLANS ============ -->
+        <section id="plans" class="mt-10 min-[712px]:mt-16 min-[712px]:mb-24">
+          <section class="relative z-10 mx-auto w-full max-w-[1200px] px-6 min-[712px]:px-10 min-[1280px]:px-0">
+            <div class="flex flex-col items-start gap-10 min-[712px]:items-center min-[712px]:gap-14">
+
+              <div class="flex flex-col items-start gap-8 text-left min-[712px]:items-center min-[712px]:text-center">
+                <div class="flex flex-col items-start gap-6 min-[712px]:items-center">
+                  <h2 class="font-exposure text-left text-[26px] min-[712px]:text-center min-[712px]:text-4xl leading-[1.15] tracking-[-0.01em] min-[712px]:tracking-[-0.02em] text-black">Choose how to join</h2>
+                  <p class="max-w-[440px] text-left font-sans text-base font-medium leading-[1.4] text-black/70 min-[712px]:text-center min-[712px]:text-lg">Every tier gets the full forum. Start free, then support the project if it becomes part of your day</p>
+                </div>
+
+                <!-- toggle -->
+                <div class="relative flex items-center rounded-full border border-black/10 bg-black/[0.035] p-1 h-10 w-56">
+                  <div id="toggle-pill" class="absolute w-[calc(50%-0.25rem)] rounded-full bg-white shadow-[0px_0px_1px_rgba(0,0,0,0.2),0px_2px_4px_rgba(0,0,0,0.04),0px_16px_22px_rgba(0,0,0,0.03)] transition-transform duration-200 ease-in-out h-8" style="transform: translateX(0)"></div>
+                  <button id="btn-monthly" type="button" aria-pressed="true" class="relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black">Monthly</button>
+                  <button id="btn-yearly" type="button" aria-pressed="false" class="relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black/50 hover:text-black/80">Yearly</button>
+                </div>
+              </div>
+
+              <div class="flex w-full flex-col min-[712px]:flex-row flex-wrap justify-center gap-5 min-[712px]:gap-6 pt-3">
+
+                <!-- Free -->
+                <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-3 min-[712px]:order-none shadow-[0_10px_40px_-12px_rgba(0,0,0,0.10),0_2px_6px_rgba(0,0,0,0.03)] border-marketing-border">
+                  <div class="flex flex-col gap-1">
+                    <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Free</h4>
+                    <p class="min-h-[2.375rem] text-[14px] leading-snug text-black/55">Browse, read, and reply in every public channel</p>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-[18px] font-semibold leading-none tracking-[-0.01em] tabular-nums">$0</span>
+                      <span class="text-[15px] font-medium text-black/55">/ month</span>
+                    </div>
+                    <p class="text-[13px] tabular-nums text-black/45">Free Forever</p>
+                  </div>
+                  <p class="-mb-3.5 text-[14px] font-medium text-black/55">Includes:</p>
+                  <ul class="flex flex-col gap-2.5">
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>All public channels</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Read and reply to topics</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>All seven themes</li>
+                  </ul>
+                  <div class="mt-auto">
+                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Enter Forum</a>
+                  </div>
+                </div>
+
+                <!-- Member -->
+                <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-1 min-[712px]:order-none shadow-[0_10px_40px_-12px_rgba(0,0,0,0.10),0_2px_6px_rgba(0,0,0,0.03)] border-marketing-border">
+                  <div class="flex flex-col gap-1">
+                    <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Member</h4>
+                    <p class="min-h-[2.375rem] text-[14px] leading-snug text-black/55">Create topics, bookmarks, and members-only channels</p>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-[18px] font-semibold leading-none tracking-[-0.01em] tabular-nums" data-price data-monthly="$5" data-yearly="$4">$5</span>
+                      <span class="text-[15px] font-medium text-black/55">/ month</span>
+                    </div>
+                    <p class="text-[13px] tabular-nums text-black/45">Billed&nbsp;<span data-period>Monthly</span></p>
+                  </div>
+                  <p class="-mb-3.5 text-[14px] font-medium text-black/55">Everything in Free, plus:</p>
+                  <ul class="flex flex-col gap-2.5">
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Create topics and replies</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Bookmarks and drafts</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Subscribers-only channel</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Upload attachments up to 10MB</li>
+                  </ul>
+                  <div class="mt-auto">
+                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Get Member</a>
+                  </div>
+                </div>
+
+                <!-- Supporter -->
+                <div class="relative flex w-full flex-col gap-6 rounded-[22px] border bg-white p-6 text-black min-[712px]:flex-1 min-[712px]:p-7 order-2 min-[712px]:order-none gradient-border shadow-[0_0_36px_2px_rgba(66,129,175,0.06),0_8px_50px_6px_rgba(66,129,175,0.035)] border-ocean/40">
+                  <div class="flex flex-col gap-1">
+                    <h4 class="font-exposure text-[26px] tracking-[-0.02em]">Supporter</h4>
+                    <p class="min-h-[2.375rem] text-[14px] leading-snug text-black/55">Keep the lights on and unlock FED-Poster V1</p>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-[18px] font-semibold leading-none tracking-[-0.01em] tabular-nums" data-price data-monthly="$10" data-yearly="$8">$10</span>
+                      <span class="text-[15px] font-medium text-black/55">/ month</span>
+                    </div>
+                    <p class="text-[13px] tabular-nums text-black/45">Billed&nbsp;<span data-period>Monthly</span></p>
+                  </div>
+                  <p class="-mb-3.5 text-[14px] font-medium text-black/55">Everything in Member, plus:</p>
+                  <ul class="flex flex-col gap-2.5">
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>FED-Poster V1 included</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Supporter badge on every post</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Priority in the questions channel</li>
+                    <li class="flex items-start gap-2 text-[14px] leading-snug text-black/70"><svg class="mt-0.5 size-4 shrink-0 text-black/45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13L11 16L16 8"/></svg>Ko-fi supporter wall</li>
+                  </ul>
+                  <div class="mt-auto">
+                    <a href="#" class="btn-dark h-11 w-full rounded-2xl px-3 text-base">Support FED Hub</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ============ COMMUNITY ============ -->
+        <section id="community" class="relative z-30 w-full pt-32 pb-0 min-[712px]:pt-32 min-[712px]:pb-20">
+          <div class="mx-auto flex w-full max-w-[1200px] flex-col gap-4 min-[712px]:gap-3 min-[712px]:px-10 min-[1280px]:px-0">
+            <div class="flex w-full flex-col items-start gap-2 px-6 min-[712px]:items-center min-[712px]:px-0">
+              <h2 class="text-left font-exposure leading-[1.2] tracking-[-0.02em] min-[712px]:text-center min-[712px]:tracking-[-0.03em] text-black text-[26px] min-[712px]:text-4xl">Community</h2>
+              <div class="min-[712px]:hidden">
+                <a class="inline-flex items-center gap-1 text-lg font-medium text-black/70" href="#">Explore user stories
+                  <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6L20 12L14 18"/><path d="M19 12H4"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <div id="tweets-marquee" class="scroll-fade w-full max-w-[1248px] py-6 min-[712px]:pt-8 min-[712px]:pb-5" style="clip-path: inset(-9999px 0 -9999px 0)">
+              <div class="tweets-track">
+
+                <!-- copy 1 -->
+                <div class="flex shrink-0 items-start gap-4 pr-4 min-[712px]:gap-6 min-[712px]:pr-6">
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#3A3A3A] to-[#1F1F1F] grid place-items-center text-white font-semibold">M</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Mara</div>
+                          <div class="text-sm text-neutral-500">@mara_builds</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      The Parchment theme is unreal. Instantly switched and never going back.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#4281AF] to-[#2b6fb0] grid place-items-center text-white font-semibold">K</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Kai</div>
+                          <div class="text-sm text-neutral-500">@kai_dev</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Server rail feels so much more native. Great work.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#5C8A6A] to-[#3f6a4a] grid place-items-center text-white font-semibold">N</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Nova</div>
+                          <div class="text-sm text-neutral-500">@nova_icons</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Icons channel is a goldmine. Bookmarked 12 packs in a day.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#B85C77] to-[#8a3f55] grid place-items-center text-white font-semibold">I</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Iris</div>
+                          <div class="text-sm text-neutral-500">@iris_teaches</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      The guides channel has saved me twice this week. Real walkthroughs, not docs.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#B8892E] to-[#8a6a3a] grid place-items-center text-white font-semibold">T</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Theo</div>
+                          <div class="text-sm text-neutral-500">@theo_tools</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Best forum UX I've used. Bookmarked five topics in the first hour.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#7E5A8A] to-[#5a3a66] grid place-items-center text-white font-semibold">D</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Devon</div>
+                          <div class="text-sm text-neutral-500">@devon_front</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Realtime replies feel instant. The feedback loop is right.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#3A3A3A] to-[#1F1F1F] grid place-items-center text-white font-semibold">M</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Morgan</div>
+                          <div class="text-sm text-neutral-500">@morgan_builds</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      Putting in my prediction now — FED Hub will be the default forum for FED builders by this time next year.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#4281AF] to-[#2b6fb0] grid place-items-center text-white font-semibold">J</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Janina</div>
+                          <div class="text-sm text-neutral-500">@janina_codes</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">I run the icons channel. It's the warmest corner of the internet.</div>
+                  </a>
+
+                </div>
+
+                <!-- copy 2 (duplicate for seamless loop) -->
+                <div class="flex shrink-0 items-start gap-4 pr-4 min-[712px]:gap-6 min-[712px]:pr-6" aria-hidden="true">
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#3A3A3A] to-[#1F1F1F] grid place-items-center text-white font-semibold">M</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Mara</div>
+                          <div class="text-sm text-neutral-500">@mara_builds</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      The Parchment theme is unreal. Instantly switched and never going back.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#4281AF] to-[#2b6fb0] grid place-items-center text-white font-semibold">K</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Kai</div>
+                          <div class="text-sm text-neutral-500">@kai_dev</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Server rail feels so much more native. Great work.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#5C8A6A] to-[#3f6a4a] grid place-items-center text-white font-semibold">N</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Nova</div>
+                          <div class="text-sm text-neutral-500">@nova_icons</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Icons channel is a goldmine. Bookmarked 12 packs in a day.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#B85C77] to-[#8a3f55] grid place-items-center text-white font-semibold">I</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Iris</div>
+                          <div class="text-sm text-neutral-500">@iris_teaches</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      The guides channel has saved me twice this week. Real walkthroughs, not docs.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#B8892E] to-[#8a6a3a] grid place-items-center text-white font-semibold">T</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Theo</div>
+                          <div class="text-sm text-neutral-500">@theo_tools</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Best forum UX I've used. Bookmarked five topics in the first hour.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#7E5A8A] to-[#5a3a66] grid place-items-center text-white font-semibold">D</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Devon</div>
+                          <div class="text-sm text-neutral-500">@devon_front</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">Realtime replies feel instant. The feedback loop is right.</div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#3A3A3A] to-[#1F1F1F] grid place-items-center text-white font-semibold">M</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Morgan</div>
+                          <div class="text-sm text-neutral-500">@morgan_builds</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a] overflow-hidden" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3">
+                      Putting in my prediction now — FED Hub will be the default forum for FED builders by this time next year.
+                    </div>
+                  </a>
+
+                  <a href="#" class="tweet-card" tabindex="-1">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#4281AF] to-[#2b6fb0] grid place-items-center text-white font-semibold">J</div>
+                        <div>
+                          <div class="text-sm font-semibold whitespace-nowrap">Janina</div>
+                          <div class="text-sm text-neutral-500">@janina_codes</div>
+                        </div>
+                      </div>
+                      <svg class="size-5 text-[#4281AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M22.16 5.66a8.38 8.38 0 0 1-2.4.66A4.2 4.2 0 0 0 21.6 4c-.82.49-1.72.83-2.66 1.02a4.18 4.18 0 0 0-7.13 3.81 11.87 11.87 0 0 1-8.62-4.37 4.17 4.17 0 0 0-.57 2.1c0 1.45.74 2.73 1.86 3.48a4.17 4.17 0 0 1-1.89-.52v.05a4.19 4.19 0 0 0 3.36 4.1 4.21 4.21 0 0 1-1.9.07 4.19 4.19 0 0 0 3.91 2.9 8.39 8.39 0 0 1-6.19 1.73A11.83 11.83 0 0 0 7.78 21.9c7.69 0 11.9-6.37 11.9-11.9 0-.18 0-.36-.01-.54a8.5 8.5 0 0 0 2.09-2.17z"/></svg>
+                    </div>
+                    <div class="text-sm leading-[18px] text-[#1a1a1a]">I run the icons channel. It's the warmest corner of the internet.</div>
+                  </a>
+
+                </div>
+
+              </div>
+            </div>
+
+            <div class="hidden min-[712px]:flex min-[712px]:justify-center min-[712px]:pt-3">
+              <a class="inline-flex items-center gap-1 text-base font-medium text-black/70" href="#">Explore user stories
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6L20 12L14 18"/><path d="M19 12H4"/></svg>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ FINAL CTA ============ -->
+        <section class="relative z-10 w-full pb-32 min-[712px]:pb-44">
+          <div class="pointer-events-none absolute left-1/2 w-full max-w-[2300px] -translate-x-1/2 -top-16 -bottom-12 -z-10 min-[712px]:-top-28 min-[712px]:-bottom-12" style="background: radial-gradient(60% 80% at 50% 50%, rgba(180,205,230,0.6) 0%, rgba(200,215,235,0.25) 45%, transparent 80%);"></div>
+
+          <div class="min-[712px]:px-10 min-[1280px]:px-0">
+            <div class="relative mx-auto w-full max-w-[1280px]">
+              <div class="relative z-10 flex w-full flex-col items-center justify-center gap-8 px-6 pt-30 pb-10 text-center min-[712px]:gap-10 min-[712px]:px-10 min-[712px]:pt-45 min-[712px]:pb-24">
+                <h3 class="w-full font-exposure text-black text-[32px] max-[374px]:text-[30px] max-[339px]:text-[26px] min-[712px]:text-[52px] leading-[1.05] min-[712px]:leading-none tracking-[-0.03em] min-[712px]:tracking-[-0.04em]">Join the conversation<br>with just a text</h3>
+
+                <div class="flex flex-col items-center gap-3 min-[712px]:hidden">
+                  <a href="#top" class="btn-dark h-12 max-w-[357px] gap-2.5 rounded-2xl px-10 w-auto min-w-[290px] text-base">Enter Forum</a>
+                  <a href="#channels" class="btn-light h-12 w-auto min-w-[290px] rounded-2xl px-10 text-base">Browse Channels</a>
+                </div>
+
+                <div class="hidden min-[712px]:flex items-center gap-3">
+                  <a href="#top" class="btn-dark h-11 rounded-xl px-4 w-40 text-base">Enter Forum</a>
+                  <a href="#channels" class="btn-light h-11 rounded-xl px-4 w-40 text-base">Channels</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="min-[712px]:mt-16">
+    <div class="relative overflow-hidden">
+      <div class="relative mx-auto flex w-full max-w-[1200px] flex-col px-8 pt-10 min-[712px]:px-10 min-[712px]:pt-14 min-[712px]:pb-0">
+        <div class="grid grid-cols-2 gap-x-12 gap-y-15 min-[712px]:grid-cols-4 min-[712px]:gap-x-20 min-[712px]:gap-y-14">
+          <div class="flex flex-col items-start gap-5">
+            <div class="text-[15px] leading-none font-medium text-black/50">Forum</div>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">Log in</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#channels">Channels</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#features">Features</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#plans">Plans</a>
+          </div>
+          <div class="flex flex-col items-start gap-5">
+            <div class="text-[15px] leading-none font-medium text-black/50">Resources</div>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">Docs</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">FAQs</a>
+            <a href="https://discord.com" target="_blank" rel="noreferrer" class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors">Discord</a>
+          </div>
+          <div class="flex flex-col items-start gap-5">
+            <div class="text-[15px] leading-none font-medium text-black/50">Company</div>
+            <a href="https://ko-fi.com/fedpromptly" target="_blank" rel="noreferrer" class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors">Ko-fi</a>
+            <a href="https://github.com" target="_blank" rel="noreferrer" class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors">GitHub</a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer" class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors">Twitter</a>
+          </div>
+          <div class="flex flex-col items-start gap-5">
+            <div class="text-[15px] leading-none font-medium text-black/50">Legal</div>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">Privacy</a>
+            <a class="text-[15px] leading-none font-medium text-black hover:text-black/65 transition-colors" href="#">Terms</a>
+          </div>
+        </div>
+
+        <div class="-mb-4 mt-14 flex flex-row items-center gap-3 min-[712px]:justify-between">
+          <span class="text-[15px] leading-none font-medium text-black/50 min-[712px]:hidden">© 2026</span>
+          <span class="h-3 w-[1.5px] shrink-0 rounded-full bg-black/15 min-[712px]:hidden"></span>
+          <span class="text-[15px] leading-none font-medium text-black/50 hidden min-[712px]:block">
+            © 2026
+            <span class="h-3 w-[1.5px] shrink-0 rounded-full bg-black/15 mx-2 inline-block align-middle"></span>
+            <a href="https://www.google.com/search?q=palo+alto+weather" target="_blank" rel="noreferrer" class="text-inherit no-underline">Designed in Palo Alto, California</a>
+          </span>
+          <span class="text-[15px] leading-none font-medium text-black/50 flex items-center" style="color:#62AA73">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="overflow-visible">
+              <circle cx="8" cy="8" r="8" class="fill-current opacity-25">
+                <animate attributeName="r" values="5;8;5" dur="2.5s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.35;0.15;0.35" dur="2.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="8" cy="8" r="4" class="fill-current"/>
+            </svg>
+            <span class="px-2">All systems operational</span>
+          </span>
+        </div>
+
+        <!-- giant footer logo -->
+        <div class="flex justify-center pt-14 min-[712px]:pt-16" style="transform: translateY(10%)">
+          <div class="w-[min(100%,1000px)] select-none">
+            <svg viewBox="0 0 1140 298" class="w-full h-auto" aria-label="FED Hub logo">
+              <defs>
+                <linearGradient id="footFade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1C1C1C" stop-opacity="0.14"/>
+                  <stop offset="100%" stop-color="#1C1C1C" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g fill="url(#footFade)" transform="translate(390 60)">
+                <path d="M243.615 78.7222C220.468 66.2037 195.76 57.5592 170.443 52.8178C167.377 52.2396 166.769 48.1342 169.518 46.6886C187.861 37.119 207.593 29.9779 228.28 25.6991C231.781 24.9763 234.125 21.6515 233.517 18.1243L231.26 5.40338C230.595 1.70275 227.094 -0.610148 223.391 0.141543C187.514 7.48499 154.183 22.5188 125.337 43.5951C124.18 44.4335 122.675 44.4335 121.518 43.5951C92.7297 22.5188 59.399 7.48499 23.5223 0.141543C19.8478 -0.610148 16.318 1.70275 15.6525 5.40338L13.3958 18.1243C12.7592 21.6515 15.1028 24.9763 18.6326 25.6991C39.3196 29.9779 59.0518 37.0901 77.3953 46.6886C80.1439 48.1342 79.5363 52.2396 76.4694 52.8178C51.1821 57.5881 26.4734 66.2037 3.35605 78.7511C0.144503 80.4858 -0.954946 84.5912 0.867825 87.7425L7.31986 98.9312C9.1137 102.025 13.0486 103.065 16.2023 101.389C35.9634 90.7493 56.9687 83.2613 78.4658 78.9246C81.5038 78.3175 83.6448 81.8735 81.6195 84.2443C64.0572 104.945 49.7065 128.565 39.4932 154.412C38.1334 157.823 39.9272 161.668 43.3702 162.912L55.4931 167.335C58.8493 168.549 62.5527 166.844 63.8547 163.519C73.4315 139.494 86.9721 117.608 103.608 98.5842C105.663 96.2424 109.54 97.8036 109.395 100.897C106.849 152.128 99.3553 202.838 87.0589 252.276C86.5091 254.473 84.5128 256.006 82.256 256.006H6.5676C2.95099 256.006 -0.000161202 258.955 -0.000161202 262.569V275.463C-0.000161202 279.077 2.95099 282.026 6.5676 282.026H240.432C244.049 282.026 247 279.077 247 275.463V262.569C247 258.955 244.049 256.006 240.432 256.006H117.178C115.066 256.006 113.504 254.04 113.995 251.987C126.031 201.797 133.294 150.393 135.637 98.4975C135.782 95.5486 139.398 94.2475 141.366 96.4737C158.87 115.989 173.076 138.597 183 163.519C184.331 166.844 188.006 168.578 191.362 167.335L203.514 162.912C206.957 161.668 208.751 157.823 207.391 154.412C197.177 128.565 182.827 104.945 165.264 84.2443C163.239 81.8735 165.38 78.2886 168.418 78.9246C189.944 83.2613 210.978 90.7493 230.768 101.389C233.922 103.094 237.857 102.054 239.651 98.9312L246.103 87.7425C247.926 84.5623 246.826 80.4858 243.615 78.7511V78.7222Z"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  /* ---------------- Mobile menu ---------------- */
+  (function () {
+    const dialog = document.getElementById('menu-dialog');
+    const panel = document.getElementById('menu-panel');
+    const backdrop = document.getElementById('menu-backdrop');
+    const openBtn = document.getElementById('menu-open');
+    const closeBtn = document.getElementById('menu-close');
+
+    function openMenu() {
+      dialog.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.style.opacity = '1';
+        panel.classList.remove('translate-y-full');
+      });
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      backdrop.style.opacity = '0';
+      panel.classList.add('translate-y-full');
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      setTimeout(() => dialog.classList.add('hidden'), 300);
+    }
+
+    if (openBtn) openBtn.addEventListener('click', openMenu);
+    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+    if (backdrop) backdrop.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  })();
+
+  /* ---------------- Pricing toggle ---------------- */
+  (function () {
+    const monthlyBtn = document.getElementById('btn-monthly');
+    const yearlyBtn = document.getElementById('btn-yearly');
+    const pill = document.getElementById('toggle-pill');
+    const prices = document.querySelectorAll('[data-price]');
+    const periods = document.querySelectorAll('[data-period]');
+
+    function setMode(yearly) {
+      if (yearly) {
+        pill.style.transform = 'translateX(100%)';
+        monthlyBtn.className = 'relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black/50 hover:text-black/80';
+        yearlyBtn.className = 'relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black';
+      } else {
+        pill.style.transform = 'translateX(0)';
+        monthlyBtn.className = 'relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black';
+        yearlyBtn.className = 'relative z-10 flex w-1/2 items-center justify-center rounded-full font-medium transition-colors duration-200 h-8 text-sm text-black/50 hover:text-black/80';
+      }
+      monthlyBtn.setAttribute('aria-pressed', String(!yearly));
+      yearlyBtn.setAttribute('aria-pressed', String(yearly));
+      prices.forEach((el) => {
+        el.textContent = yearly ? el.dataset.yearly : el.dataset.monthly;
+      });
+      periods.forEach((el) => { el.textContent = yearly ? 'Yearly' : 'Monthly'; });
+    }
+
+    if (monthlyBtn && yearlyBtn) {
+      monthlyBtn.addEventListener('click', () => setMode(false));
+      yearlyBtn.addEventListener('click', () => setMode(true));
+    }
+  })();
+
+  /* ---------------- Reveal on scroll ---------------- */
+  (function () {
+    const els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    els.forEach(el => io.observe(el));
+  })();
+
+  /* ---------------- Activate marquees when visible ---------------- */
+  (function () {
+    function activate(el, cls) {
+      if (!el) return;
+      if (!('IntersectionObserver' in window)) { el.classList.add(cls); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) el.classList.add(cls);
+          else el.classList.remove(cls);
+        });
+      }, { threshold: 0 });
+      io.observe(el);
+    }
+    activate(document.getElementById('integration-carousel'), 'carousel-active');
+    activate(document.getElementById('tweets-marquee'), 'tweets-active');
+  })();
+
+  /* ---------------- Smooth scroll for in-page links ---------------- */
+  (function () {
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id.length < 2) return;
+        const target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
