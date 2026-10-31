@@ -1541,7 +1541,10 @@ tailwind.config = {
         <span id="toggleText">New here?</span>
         <button type="button" id="toggleAuthMode">Sign Up</button>
       </div>
-    </form>
+    <div class="login-divider"><span>or</span></div>
+<button type="button" id="museSignInBtn" class="btn-primary">Sign in with Muse</button>
+<p class="login-sub" style="text-align:center;margin-top:10px">No password. Your Muse approves the sign-in.</p>
+      </form>
   </div>
 </div>
 
@@ -1985,5 +1988,152 @@ tailwind.config = {
   })();
 </script>
 
+<script>
+(function () {
+  'use strict';
+  var OAUTH = 'https://www.fedpromptly.com/login';
+  var CLIENT_ID = 'hub';
+  var REDIRECT_URI = 'https://hub.fedos.workers.dev/';
+  var PKCE_KEY = 'fedhub_muse_pkce';
+  var SESSION_KEY = 'fedhub_muse_session';
+
+  function b64url(bytes) {
+    var s = '';
+    for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function randomStr(n) {
+    var a = new Uint8Array(n);
+    crypto.getRandomValues(a);
+    return b64url(a);
+  }
+  function challengeOf(verifier) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))
+      .then(function (d) { return b64url(new Uint8Array(d)); });
+  }
+  function banner(msg, ok) {
+    var d = document.createElement('div');
+    d.textContent = msg;
+    d.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:9999;padding:12px 18px;border-radius:10px;font:500 14px Inter,system-ui,sans-serif;color:#fff;background:' + (ok ? '#2e7d4f' : '#b3261e') + ';box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center';
+    document.body.appendChild(d);
+    setTimeout(function () { d.remove(); }, 6000);
+  }
+  function setMuseUI(user) {
+    var name = (user && (user.preferred_username || (user.email ? user.email.split('@')[0] : ''))) || 'User';
+    document.querySelectorAll('[data-login-trigger]').forEach(function (btn) {
+      btn.classList.add('logged-in');
+      var text = btn.querySelector('[data-login-text]');
+      if (text) text.textContent = name;
+      var avatar = btn.querySelector('.user-avatar');
+      if (avatar) avatar.textContent = name.charAt(0).toUpperCase();
+      btn.title = 'Signed in with Muse - click to sign out';
+    });
+  }
+  function clearMuseUI() {
+    document.querySelectorAll('[data-login-trigger]').forEach(function (btn) {
+      btn.classList.remove('logged-in');
+      var text = btn.querySelector('[data-login-text]');
+      if (text) text.textContent = 'Login';
+      var avatar = btn.querySelector('.user-avatar');
+      if (avatar) avatar.textContent = '👤';
+      btn.title = 'Click to sign in';
+    });
+  }
+  function readSession() {
+    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { return null; }
+  }
+  function saveSession(s) { try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {} }
+  function dropSession() { try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {} }
+
+  function postToken(params) {
+    return fetch(OAUTH + '/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params)
+    }).then(function (r) {
+      if (!r.ok) throw new Error('token request failed');
+      return r.json();
+    });
+  }
+  function fetchUserinfo(access) {
+    return fetch(OAUTH + '/oauth/userinfo', {
+      headers: { Authorization: 'Bearer ' + access }
+    }).then(function (r) {
+      if (!r.ok) throw new Error('userinfo failed');
+      return r.json();
+    });
+  }
+  function refresh(sess) {
+    return postToken({ grant_type: 'refresh_token', refresh_token: sess.refresh_token, client_id: CLIENT_ID })
+      .then(function (pair) {
+        return fetchUserinfo(pair.access_token).then(function (user) {
+          return { access_token: pair.access_token, refresh_token: pair.refresh_token || sess.refresh_token, expires_at: Date.now() + (pair.expires_in || 3600) * 1000, user: user };
+        });
+      });
+  }
+  function handleCallback(code, state, error) {
+    history.replaceState({}, '', '/');
+    if (error) { banner('Muse sign-in did not complete: ' + error); return; }
+    var stored = null;
+    try { stored = JSON.parse(sessionStorage.getItem(PKCE_KEY) || 'null'); } catch (e) {}
+    try { sessionStorage.removeItem(PKCE_KEY); } catch (e) {}
+    if (!stored || stored.state !== state) {
+      banner('Muse sign-in expired or was opened in another tab. Please try again in this tab.');
+      return;
+    }
+    postToken({ grant_type: 'authorization_code', code: code, redirect_uri: REDIRECT_URI, code_verifier: stored.verifier, client_id: CLIENT_ID })
+      .then(function (pair) {
+        return fetchUserinfo(pair.access_token).then(function (user) {
+          return { pair: pair, user: user };
+        });
+      })
+      .then(function (out) {
+        saveSession({ access_token: out.pair.access_token, refresh_token: out.pair.refresh_token || null, expires_at: Date.now() + (out.pair.expires_in || 3600) * 1000, user: out.user });
+        setMuseUI(out.user);
+        banner('Signed in with Muse as ' + (out.user.preferred_username || out.user.email || 'you') + '.', true);
+      })
+      .catch(function () { banner('Muse sign-in failed. Please try again.'); });
+  }
+  function restore() {
+    var sess = readSession();
+    if (!sess) return;
+    if (sess.expires_at && Date.now() > sess.expires_at - 60000) {
+      if (!sess.refresh_token) { dropSession(); return; }
+      refresh(sess).then(function (next) { saveSession(next); setMuseUI(next.user); })
+        .catch(function () { dropSession(); });
+      return;
+    }
+    setMuseUI(sess.user);
+  }
+  function startLogin() {
+    var verifier = randomStr(48);
+    var state = randomStr(24);
+    try { sessionStorage.setItem(PKCE_KEY, JSON.stringify({ verifier: verifier, state: state })); } catch (e) {}
+    challengeOf(verifier).then(function (challenge) {
+      var url = OAUTH + '/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CLIENT_ID)
+        + '&redirect_uri=' + encodeURIComponent(REDIRECT_URI)
+        + '&scope=openid&state=' + encodeURIComponent(state)
+        + '&code_challenge=' + encodeURIComponent(challenge) + '&code_challenge_method=S256';
+      window.location.href = url;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('museSignInBtn');
+    if (btn) btn.addEventListener('click', startLogin);
+    document.querySelectorAll('[data-login-trigger]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (readSession()) { dropSession(); clearMuseUI(); }
+      });
+    });
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('code') || params.has('state') || params.has('error')) {
+      handleCallback(params.get('code'), params.get('state'), params.get('error'));
+    } else {
+      restore();
+    }
+  });
+})();
+</script>
 </body>
 </html>
